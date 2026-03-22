@@ -246,10 +246,6 @@ export default function SignupPage() {
                       <label className={lc}>PhilSys ID Number</label>
                       <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={ic} placeholder="Philippine Identification System No." />
                     </div>
-                    <div>
-                      <label className={lc}>National ID Number</label>
-                      <input type="text" name="nationalIdNumber" value={formData.nationalIdNumber} onChange={handleChange} className={ic} placeholder="SSS / GSIS / Other" />
-                    </div>
                   </>
                 )}
 

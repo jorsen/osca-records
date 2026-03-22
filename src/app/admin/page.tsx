@@ -267,7 +267,7 @@ export default function AdminPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt' }}>
           <thead>
             <tr style={{ backgroundColor: '#f3f4f6' }}>
-              {['#','Full Name','Age','Sex','Address','Birthplace','Birthday','Status','Senior ID','National ID','Pensioner','Registered'].map(h => (
+              {['#','Full Name','Age','Sex','Address','Birthplace','Birthday','Status','Senior ID','Pensioner','Registered'].map(h => (
                 <th key={h} style={{ border: '1px solid #d1d5db', padding: '2px 4px', textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -284,7 +284,6 @@ export default function AdminPage() {
                 <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', whiteSpace: 'nowrap' }}>{fmt(u.birthday)}</td>
                 <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{cap(u.relationshipStatus)}</td>
                 <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', fontFamily: 'monospace' }}>{u.seniorIdNumber || '—'}</td>
-                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', fontFamily: 'monospace' }}>{u.nationalIdNumber || '—'}</td>
                 <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{u.pensioner ? 'Yes' : 'No'}</td>
                 <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', whiteSpace: 'nowrap' }}>{fmt(u.createdAt)}</td>
               </tr>
@@ -437,12 +436,6 @@ export default function AdminPage() {
                             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Senior ID</p>
                             <p className="text-gray-800 font-mono font-semibold text-sm mt-0.5 tracking-wider">{user.seniorIdNumber || <span className="text-gray-400 font-normal font-sans tracking-normal">—</span>}</p>
                           </div>
-                          {user.nationalIdNumber && (
-                            <div className="col-span-2">
-                              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">National ID</p>
-                              <p className="text-gray-800 font-mono font-semibold text-sm mt-0.5">{user.nationalIdNumber}</p>
-                            </div>
-                          )}
                         </div>
                         <p className="text-gray-400 text-xs mt-3 pt-3 border-t border-gray-100">
                           #{i + 1} · Registered {fmt(user.createdAt)}
@@ -478,10 +471,10 @@ export default function AdminPage() {
                 <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full table-fixed text-sm">
                     <colgroup>
-                      <col className="w-[13%]" /><col className="w-[9%]" /><col className="w-[4%]" />
-                      <col className="w-[6%]" /><col className="w-[12%]" /><col className="w-[7%]" />
-                      <col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[9%]" />
-                      <col className="w-[7%]" /><col className="w-[7%]" /><col className="w-[9%]" />
+                      <col className="w-[14%]" /><col className="w-[10%]" /><col className="w-[5%]" />
+                      <col className="w-[6%]" /><col className="w-[14%]" /><col className="w-[8%]" />
+                      <col className="w-[9%]" /><col className="w-[11%]" />
+                      <col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[7%]" />
                     </colgroup>
                     <thead className="bg-gray-50 border-y border-gray-100">
                       <tr>
@@ -493,7 +486,6 @@ export default function AdminPage() {
                         <th className={thPlain}>Birthday</th>
                         <th className={thPlain}>Relationship</th>
                         <th className={thPlain}>Senior ID</th>
-                        <th className={thPlain}>National ID</th>
                         <th className={thClass} onClick={() => handleSort('pensioner')}>Pensioner <SortIcon field="pensioner" /></th>
                         <th className={thClass} onClick={() => handleSort('createdAt')}>Registered <SortIcon field="createdAt" /></th>
                         <th className={thPlain}>Actions</th>
@@ -510,7 +502,6 @@ export default function AdminPage() {
                           <td className="px-3 py-3 text-gray-600 text-xs">{user.birthday ? fmt(user.birthday) : <span className="text-gray-300">—</span>}</td>
                           <td className="px-3 py-3 capitalize text-gray-600 truncate text-xs">{user.relationshipStatus || <span className="text-gray-300">—</span>}</td>
                           <td className="px-3 py-3 text-gray-600 truncate text-xs font-mono">{user.seniorIdNumber || <span className="text-gray-300">—</span>}</td>
-                          <td className="px-3 py-3 text-gray-600 truncate text-xs font-mono">{user.nationalIdNumber || <span className="text-gray-300">—</span>}</td>
                           <td className="px-3 py-3">
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${user.pensioner ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                               {user.pensioner ? '✅ Yes' : 'No'}
@@ -610,10 +601,6 @@ export default function AdminPage() {
                       <div>
                         <label className={labelClass}>PhilSys ID</label>
                         <input type="text" value={editForm.philsysId} onChange={e => setEditForm(p => ({ ...p, philsysId: e.target.value }))} className={`${inputClass} font-mono`} placeholder="Philippine ID System number" />
-                      </div>
-                      <div>
-                        <label className={labelClass}>National ID</label>
-                        <input type="text" value={editForm.nationalIdNumber} onChange={e => setEditForm(p => ({ ...p, nationalIdNumber: e.target.value }))} className={`${inputClass} font-mono`} placeholder="SSS / GSIS / Others" />
                       </div>
                     </>
                   )}

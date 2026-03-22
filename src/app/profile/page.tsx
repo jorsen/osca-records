@@ -373,10 +373,6 @@ export default function ProfilePage() {
                       <label className={labelClass}>PhilSys ID Number</label>
                       <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={inputClass} placeholder="Philippine Identification System" />
                     </div>
-                    <div>
-                      <label className={labelClass}>National ID Number</label>
-                      <input type="text" name="nationalIdNumber" value={formData.nationalIdNumber} onChange={handleChange} className={inputClass} placeholder="SSS / GSIS / Others" />
-                    </div>
                   </>
                 )}
               </div>
@@ -419,7 +415,6 @@ export default function ProfilePage() {
                 {!profile.hasNoId && (
                   <>
                     <InfoRow label="PhilSys ID" value={profile.philsysId} />
-                    <InfoRow label="National ID Number" value={profile.nationalIdNumber} />
                   </>
                 )}
                 {profile.hasNoId && (
