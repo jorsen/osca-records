@@ -89,18 +89,21 @@ Use null for any field that is not clearly visible. If the image is unclear, sti
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const result = await model.generateContent({
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { data: base64, mimeType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' } },
+          { text: prompt },
+        ],
+      }],
       generationConfig: { temperature: 0, maxOutputTokens: 512 },
     });
 
-    const result = await model.generateContent([
-      { inlineData: { data: base64, mimeType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' } },
-      prompt,
-    ]);
-
     const text = result.response.text();
-    console.log('[scan-id] raw response:', text);
+    console.log('[scan-id] raw response:', text.substring(0, 500));
 
     const data = extractJson(text);
     if (!data) {
@@ -111,14 +114,14 @@ Use null for any field that is not clearly visible. If the image is unclear, sti
       );
     }
 
-    // Normalise gender to lowercase
     if (data.gender) data.gender = data.gender.toLowerCase();
-
     return NextResponse.json({ success: true, data });
-  } catch (err) {
-    console.error('[scan-id] API error:', err);
+
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[scan-id] API error:', message);
     return NextResponse.json(
-      { error: 'Scan service error. Please try again or fill in the details manually.' },
+      { error: `Scan failed: ${message}` },
       { status: 500 }
     );
   }
