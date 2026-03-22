@@ -31,8 +31,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File must be less than 5MB' }, { status: 400 });
   }
 
-  const filename = `ids/${userId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
-  const { url } = await put(filename, file, { access: 'public', contentType: file.type });
-
-  return NextResponse.json({ url });
+  try {
+    const filename = `ids/${userId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+    const { url } = await put(filename, file, { access: 'public', contentType: file.type });
+    return NextResponse.json({ url });
+  } catch (err) {
+    console.error('Blob upload error:', err);
+    return NextResponse.json({ error: 'Upload failed: ' + (err instanceof Error ? err.message : String(err)) }, { status: 500 });
+  }
 }

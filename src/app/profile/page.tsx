@@ -183,7 +183,7 @@ export default function ProfilePage() {
       setUploadFile(null); setUploadPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
-      setUploadError('Something went wrong during upload.');
+      setUploadError(err instanceof Error ? err.message : 'Something went wrong during upload.');
       console.error(err);
     } finally {
       setUploadLoading(false);
