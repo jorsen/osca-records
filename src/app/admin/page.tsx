@@ -590,20 +590,10 @@ export default function AdminPage() {
                     <label className={labelClass}>Senior ID (16 digits)</label>
                     <input type="text" value={editForm.seniorIdNumber} onChange={e => setEditForm(p => ({ ...p, seniorIdNumber: e.target.value }))} className={`${inputClass} font-mono`} maxLength={16} pattern="\d{16}" title="Must be exactly 16 digits" placeholder="0000000000000000" />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input type="checkbox" checked={editForm.hasNoId} onChange={e => setEditForm(p => ({ ...p, hasNoId: e.target.checked }))} className="w-5 h-5 rounded accent-green-700" />
-                      <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">I have no other IDs</span>
-                    </label>
+                  <div>
+                    <label className={labelClass}>PhilSys ID</label>
+                    <input type="text" value={editForm.philsysId} onChange={e => setEditForm(p => ({ ...p, philsysId: e.target.value }))} className={`${inputClass} font-mono`} placeholder="Philippine ID System number" />
                   </div>
-                  {!editForm.hasNoId && (
-                    <>
-                      <div>
-                        <label className={labelClass}>PhilSys ID</label>
-                        <input type="text" value={editForm.philsysId} onChange={e => setEditForm(p => ({ ...p, philsysId: e.target.value }))} className={`${inputClass} font-mono`} placeholder="Philippine ID System number" />
-                      </div>
-                    </>
-                  )}
                 </div>
                 <div className="flex gap-3 pt-2">
                   <button type="submit" disabled={editLoading} className="flex-1 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition">

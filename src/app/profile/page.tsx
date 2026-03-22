@@ -352,29 +352,10 @@ export default function ProfilePage() {
                     title="Must be exactly 16 digits"
                   />
                 </div>
-
-                {/* hasNoId checkbox */}
-                <div className="sm:col-span-2">
-                  <label className="flex items-center gap-4 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="hasNoId"
-                      checked={formData.hasNoId}
-                      onChange={handleChange}
-                      className="w-7 h-7 rounded border-2 border-gray-300 accent-green-700"
-                    />
-                    <span className="text-xl font-semibold text-gray-700">I have no other IDs</span>
-                  </label>
+                <div>
+                  <label className={labelClass}>PhilSys ID Number</label>
+                  <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={inputClass} placeholder="Philippine Identification System" />
                 </div>
-
-                {!formData.hasNoId && (
-                  <>
-                    <div>
-                      <label className={labelClass}>PhilSys ID Number</label>
-                      <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={inputClass} placeholder="Philippine Identification System" />
-                    </div>
-                  </>
-                )}
               </div>
               <div className="flex gap-4 pt-4">
                 <button type="submit" disabled={loading} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-xl font-bold py-5 rounded-2xl transition shadow-md">
@@ -412,17 +393,7 @@ export default function ProfilePage() {
               <div className="py-3 mt-2">
                 <p className="text-base font-bold text-green-700 uppercase tracking-wide mb-2 mt-2">ID Information</p>
                 <InfoRow label="Senior ID Number" value={profile.seniorIdNumber} />
-                {!profile.hasNoId && (
-                  <>
-                    <InfoRow label="PhilSys ID" value={profile.philsysId} />
-                  </>
-                )}
-                {profile.hasNoId && (
-                  <div className="flex flex-col sm:flex-row sm:items-center py-4 border-b border-gray-100 gap-1">
-                    <span className="text-gray-500 text-lg sm:w-52 shrink-0">Other IDs</span>
-                    <span className="text-xl font-semibold text-yellow-600">No other IDs declared</span>
-                  </div>
-                )}
+                <InfoRow label="PhilSys ID Number" value={profile.philsysId} />
                 <InfoRow label="Pensioner" value={profile.pensioner ? 'Yes ✅' : 'No'} />
               </div>
             </div>

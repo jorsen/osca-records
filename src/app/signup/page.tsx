@@ -224,30 +224,17 @@ export default function SignupPage() {
               <div className="space-y-5">
                 <p className="text-lg text-gray-500 mb-4">Enter your ID numbers. Senior ID is required if available.</p>
 
-                {/* Senior ID — always shown */}
-                <div>
-                  <label className={lc}>Senior ID Number <span className="text-green-700 text-base font-normal">(Always required)</span></label>
-                  <input type="text" name="seniorIdNumber" value={formData.seniorIdNumber} onChange={handleChange} className={ic} placeholder="16-digit OSCA Senior ID" maxLength={16} minLength={16} pattern="\d{16}" title="Must be exactly 16 digits" />
-                  <p className="text-gray-400 text-base mt-1">Must be exactly 16 digits</p>
-                </div>
-
-                {/* No ID checkbox */}
-                <label className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition ${formData.hasNoId ? 'border-orange-400 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                  <input type="checkbox" name="hasNoId" checked={formData.hasNoId} onChange={handleChange} className="w-6 h-6 accent-orange-500" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-lg font-semibold text-gray-800">I have no other IDs</p>
-                    <p className="text-sm text-gray-500">Check this if you do not have a National ID, PhilSys ID, or other ID cards</p>
+                    <label className={lc}>Senior ID Number</label>
+                    <input type="text" name="seniorIdNumber" value={formData.seniorIdNumber} onChange={handleChange} className={ic} placeholder="16-digit OSCA Senior ID" maxLength={16} minLength={16} pattern="\d{16}" title="Must be exactly 16 digits" />
+                    <p className="text-gray-400 text-base mt-1">Must be exactly 16 digits</p>
                   </div>
-                </label>
-
-                {!formData.hasNoId && (
-                  <>
-                    <div>
-                      <label className={lc}>PhilSys ID Number</label>
-                      <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={ic} placeholder="Philippine Identification System No." />
-                    </div>
-                  </>
-                )}
+                  <div>
+                    <label className={lc}>PhilSys ID Number</label>
+                    <input type="text" name="philsysId" value={formData.philsysId} onChange={handleChange} className={ic} placeholder="Philippine Identification System No." />
+                  </div>
+                </div>
 
                 <div>
                   <label className={lc}>Are you a Pensioner?</label>
