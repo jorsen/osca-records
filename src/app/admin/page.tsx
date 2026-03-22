@@ -550,7 +550,15 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <label className={labelClass}>Birthday</label>
-                    <input type="date" value={editForm.birthday} onChange={e => setEditForm(p => ({ ...p, birthday: e.target.value }))} className={inputClass} />
+                    <input type="date" value={editForm.birthday} onChange={e => {
+                      const bday = e.target.value;
+                      const birth = new Date(bday);
+                      const today = new Date();
+                      let age = today.getFullYear() - birth.getFullYear();
+                      const m = today.getMonth() - birth.getMonth();
+                      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                      setEditForm(p => ({ ...p, birthday: bday, age: bday ? String(age >= 0 ? age : '') : p.age }));
+                    }} className={inputClass} />
                   </div>
                   <div>
                     <label className={labelClass}>Birthplace</label>

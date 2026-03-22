@@ -30,10 +30,24 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const computeAge = (birthday: string) => {
+    if (!birthday) return '';
+    const birth = new Date(birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age >= 0 ? String(age) : '';
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
     const value = target.type === 'checkbox' ? target.checked : target.value;
-    setFormData(prev => ({ ...prev, [target.name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [target.name]: value,
+      ...(target.name === 'birthday' && { age: computeAge(target.value) }),
+    }));
     setError('');
   };
 
