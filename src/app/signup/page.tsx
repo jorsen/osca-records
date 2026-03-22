@@ -301,10 +301,6 @@ export default function SignupPage() {
                     >
                       <option>Senior Citizen ID</option>
                       <option>PhilSys ID</option>
-                      <option>SSS / GSIS ID</option>
-                      <option>Passport</option>
-                      <option>Driver&apos;s License</option>
-                      <option>Other ID</option>
                     </select>
                   </div>
 

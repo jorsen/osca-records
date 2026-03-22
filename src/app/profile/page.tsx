@@ -34,15 +34,6 @@ interface UserProfile {
 const ID_LABELS = [
   'Senior Citizen ID',
   'PhilSys ID',
-  'SSS ID',
-  'GSIS ID',
-  'Postal ID',
-  'Passport',
-  'Driver\'s License',
-  'Voter\'s ID',
-  'TIN ID',
-  'PRC ID',
-  'Other ID',
 ];
 
 export default function ProfilePage() {
