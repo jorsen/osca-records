@@ -49,24 +49,9 @@ const labelClass = 'block text-sm font-semibold text-gray-600 mb-1 uppercase tra
 const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString('en-PH') : '—';
 const cap = (s: string | null) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '—';
 
-interface AuditLog {
-  id: string;
-  action: string;
-  actorName: string | null;
-  targetName: string | null;
-  details: string | null;
-  createdAt: string;
-}
-
-const ACTION_ICON: Record<string, string> = {
-  LOGIN: '🔑', LOGIN_FAILED: '🚫', EDIT_RECORD: '✏️',
-  DELETE_RECORD: '🗑️', CHANGE_PASSWORD: '🔒',
-};
-
 export default function AdminPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [lightbox, setLightbox] = useState<{ url: string; label: string } | null>(null);
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
@@ -113,19 +98,7 @@ export default function AdminPage() {
     setLoading(false);
   }, [sortBy, order, router]);
 
-  const fetchAuditLogs = useCallback(async () => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return;
-    const res = await fetch('/api/audit', { headers: { Authorization: `Bearer ${token}` } });
-    if (res.ok) setAuditLogs(await res.json());
-  }, []);
-
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
-  useEffect(() => {
-    fetchAuditLogs();
-    const id = setInterval(fetchAuditLogs, 4000);
-    return () => clearInterval(id);
-  }, [fetchAuditLogs]);
 
   const handleSort = (field: SortField) => {
     if (sortBy === field) setOrder(o => o === 'asc' ? 'desc' : 'asc');
@@ -278,7 +251,7 @@ export default function AdminPage() {
   const thPlain = 'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap';
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
 
       {/* ══ PRINT-ONLY LAYOUT ══ */}
       <div className="hidden print:block font-sans" style={{ fontSize: '7pt', padding: '0' }}>
@@ -322,7 +295,7 @@ export default function AdminPage() {
       </div>
 
       {/* ══ SCREEN LAYOUT ══ */}
-      <div className="print:hidden flex flex-col flex-1 overflow-hidden">
+      <div className="print:hidden flex flex-col min-h-screen">
 
         {/* ── Header ── */}
         <header className="bg-white border-b-4 border-green-700 px-4 sm:px-6 py-4 flex justify-between items-center shadow-sm">
@@ -333,17 +306,23 @@ export default function AdminPage() {
               <p className="text-xs text-gray-400">Admin Dashboard</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm"
-          >
-            🚪 <span className="hidden sm:inline">Logout</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/admin/audit"
+              className="flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-800 font-semibold px-4 py-2.5 rounded-xl transition text-sm border border-green-200"
+            >
+              📋 <span className="hidden sm:inline">Audit Logs</span>
+            </a>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm"
+            >
+              🚪 <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </header>
 
-        <div className="flex-1 flex overflow-hidden">
-        {/* ── Main Content ── */}
-        <div className="flex-1 px-4 sm:px-6 py-4 flex flex-col gap-4 overflow-hidden">
+        <div className="flex-1 px-4 sm:px-6 py-6 space-y-6">
 
           {/* ── Stats Cards ── */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -366,7 +345,7 @@ export default function AdminPage() {
           </div>
 
           {/* ── Table Card ── */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
 
             {/* Toolbar */}
             <div className="px-4 sm:px-6 py-4 border-b border-gray-100 space-y-3">
@@ -408,7 +387,6 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="text-center py-20 text-gray-400">
                 <div className="text-5xl mb-3 animate-pulse">⏳</div>
@@ -553,42 +531,7 @@ export default function AdminPage() {
                 </div>
               </>
             )}
-            </div>
           </div>
-        </div>
-
-        {/* ── Audit Log Sidebar ── */}
-        <aside className="hidden xl:flex w-72 border-l border-gray-200 bg-white flex-col overflow-hidden shrink-0">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
-            <div>
-              <h3 className="text-sm font-bold text-gray-800">📋 Audit Log</h3>
-              <p className="text-xs text-gray-400">Live activity feed</p>
-            </div>
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Live" />
-          </div>
-          <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
-            {auditLogs.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-8 italic">No activity yet</p>
-            ) : auditLogs.map(log => (
-              <div key={log.id} className="px-4 py-3 hover:bg-gray-50 transition">
-                <div className="flex items-start gap-2">
-                  <span className="text-base shrink-0 mt-0.5">{ACTION_ICON[log.action] || '📌'}</span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-gray-800 truncate">
-                      {log.action.replace(/_/g, ' ')}
-                    </p>
-                    {log.actorName && <p className="text-xs text-gray-500 truncate">By: {log.actorName}</p>}
-                    {log.targetName && <p className="text-xs text-green-700 font-medium truncate">{log.targetName}</p>}
-                    {log.details && <p className="text-xs text-gray-400 truncate">{log.details}</p>}
-                    <p className="text-xs text-gray-300 mt-0.5">
-                      {new Date(log.createdAt).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
         </div>
 
         {/* ── Lightbox ── */}

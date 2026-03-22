@@ -9,10 +9,31 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/api/icon?size=192",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/api/icon?size=512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/api/screenshot?wide=1",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "OSCA Records Admin Dashboard"
+    },
+    {
+      "src": "/api/screenshot",
+      "sizes": "390x844",
+      "type": "image/png",
+      "label": "OSCA Records on Mobile"
     }
   ]
 }
