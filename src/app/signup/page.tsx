@@ -23,10 +23,6 @@ export default function SignupPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [scanLoading, setScanLoading] = useState(false);
-  const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
-  const [scanApplied, setScanApplied] = useState(false);
-  const isScannable = uploadingLabel === 'PhilSys ID' || uploadingLabel === 'Senior Citizen ID';
   const [showCamera, setShowCamera] = useState(false);
 
   const [error, setError] = useState('');
@@ -64,48 +60,11 @@ export default function SignupPage() {
     if (!file) return;
     setPendingFile(file);
     setUploadPreview(URL.createObjectURL(file));
-    setScanResult(null);
-    setScanApplied(false);
   };
 
   const clearPending = () => {
     setPendingFile(null);
     setUploadPreview(null);
-    setScanResult(null);
-    setScanApplied(false);
-  };
-
-  const handleScanId = async () => {
-    if (!pendingFile) return;
-    setScanLoading(true); setScanResult(null); setError('');
-    try {
-      const fd = new FormData();
-      fd.append('file', pendingFile);
-      fd.append('idType', uploadingLabel);
-      const res = await fetch('/api/scan-id', { method: 'POST', body: fd });
-      const json = await res.json();
-      if (!res.ok) { setError(json.error || 'Scan failed'); return; }
-      setScanResult(json.data);
-    } catch {
-      setError('Scan failed. Please try again or fill in manually.');
-    } finally {
-      setScanLoading(false);
-    }
-  };
-
-  const handleApplyScan = () => {
-    if (!scanResult) return;
-    setFormData(prev => ({
-      ...prev,
-      fullName: scanResult.fullName || prev.fullName,
-      birthday: scanResult.birthday || prev.birthday,
-      gender: scanResult.gender || prev.gender,
-      address: scanResult.address || prev.address,
-      birthplace: scanResult.birthplace || prev.birthplace,
-      seniorIdNumber: scanResult.seniorIdNumber || prev.seniorIdNumber,
-      philsysId: scanResult.philsysId || prev.philsysId,
-    }));
-    setScanApplied(true);
   };
 
   const handleUploadDoc = async () => {
@@ -337,7 +296,7 @@ export default function SignupPage() {
                     <label className="block text-base font-semibold text-gray-600 mb-1">Step 1 — ID Type</label>
                     <select
                       value={uploadingLabel}
-                      onChange={e => { setUploadingLabel(e.target.value); setScanResult(null); setScanApplied(false); }}
+                      onChange={e => setUploadingLabel(e.target.value)}
                       className={sc}
                     >
                       <option>Senior Citizen ID</option>
@@ -347,11 +306,6 @@ export default function SignupPage() {
                       <option>Driver&apos;s License</option>
                       <option>Other ID</option>
                     </select>
-                    {isScannable && (
-                      <p className="text-sm text-green-700 font-semibold mt-1 flex items-center gap-1">
-                        ✨ Supports auto-scan — we can fill your details automatically!
-                      </p>
-                    )}
                   </div>
 
                   {/* 2. Photo picker */}
@@ -392,56 +346,10 @@ export default function SignupPage() {
                       onCapture={(file, preview) => {
                         setPendingFile(file);
                         setUploadPreview(preview);
-                        setScanResult(null);
-                        setScanApplied(false);
                         setShowCamera(false);
                       }}
                       onClose={() => setShowCamera(false)}
                     />
-                  )}
-
-                  {/* 3. Scan (PhilSys / Senior only) */}
-                  {pendingFile && isScannable && !scanApplied && (
-                    <div className="bg-white border-2 border-green-300 rounded-2xl p-4 space-y-3">
-                      <p className="text-base font-bold text-green-800">Step 3 — Auto-Scan ID</p>
-                      <p className="text-sm text-gray-500">We&apos;ll read your details from the ID and fill in your registration form automatically.</p>
-                      {!scanResult ? (
-                        <button
-                          type="button"
-                          onClick={handleScanId}
-                          disabled={scanLoading}
-                          className="w-full flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition text-lg"
-                        >
-                          {scanLoading ? '⏳ Scanning...' : '🔍 Scan ID Now'}
-                        </button>
-                      ) : (
-                        <div className="space-y-3">
-                          <p className="text-sm font-semibold text-green-700">✅ Data extracted! Review below:</p>
-                          <div className="bg-green-50 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
-                            {Object.entries(scanResult).filter(([, v]) => v).map(([k, v]) => (
-                              <div key={k}>
-                                <span className="text-gray-500 capitalize">{k.replace(/([A-Z])/g, ' $1')}: </span>
-                                <span className="font-semibold text-gray-800">{v}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex gap-3">
-                            <button type="button" onClick={handleApplyScan} className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl transition">
-                              ✅ Apply to Form
-                            </button>
-                            <button type="button" onClick={() => setScanResult(null)} className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-3 rounded-xl transition text-sm">
-                              Re-scan
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {scanApplied && (
-                    <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-xl text-base font-semibold">
-                      ✅ Form fields updated from scan! You can review them by going back to previous steps.
-                    </div>
                   )}
 
                   {/* Upload button */}

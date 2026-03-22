@@ -68,13 +68,7 @@ export default function ProfilePage() {
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Scan state
-  const [scanLoading, setScanLoading] = useState(false);
-  const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
-  const [scanApplied, setScanApplied] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-
-  const isScannable = uploadLabel === 'PhilSys ID' || uploadLabel === 'Senior Citizen ID';
 
   useEffect(() => { fetchProfile(); }, []);
 
@@ -192,42 +186,6 @@ export default function ProfilePage() {
     } finally {
       setUploadLoading(false);
     }
-  };
-
-  const handleScanId = async () => {
-    if (!uploadFile) return;
-    setScanLoading(true); setScanResult(null); setScanApplied(false); setUploadError('');
-    const token = localStorage.getItem('auth_token');
-    try {
-      const fd = new FormData();
-      fd.append('file', uploadFile);
-      fd.append('idType', uploadLabel);
-      const res = await fetch('/api/scan-id', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
-      const json = await res.json();
-      if (!res.ok) { setUploadError(json.error || 'Scan failed'); return; }
-      setScanResult(json.data);
-    } catch (err) {
-      setUploadError('Scan failed. Please try again or fill in manually.');
-      console.error(err);
-    } finally {
-      setScanLoading(false);
-    }
-  };
-
-  const handleApplyScan = () => {
-    if (!scanResult) return;
-    setFormData(prev => ({
-      ...prev,
-      fullName: scanResult.fullName || prev.fullName,
-      birthday: scanResult.birthday || prev.birthday,
-      gender: scanResult.gender || prev.gender,
-      address: scanResult.address || prev.address,
-      birthplace: scanResult.birthplace || prev.birthplace,
-      seniorIdNumber: scanResult.seniorIdNumber || prev.seniorIdNumber,
-      philsysId: scanResult.philsysId || prev.philsysId,
-    }));
-    setScanApplied(true);
-    setIsEditing(true);
   };
 
   const handleDeleteId = async (docId: string) => {
@@ -525,16 +483,11 @@ export default function ProfilePage() {
                 <label className="block text-base font-semibold text-gray-600 mb-2">Step 1 — Select ID Type</label>
                 <select
                   value={uploadLabel}
-                  onChange={e => { setUploadLabel(e.target.value); setScanResult(null); setScanApplied(false); }}
+                  onChange={e => setUploadLabel(e.target.value)}
                   className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white focus:outline-none focus:border-green-600"
                 >
                   {ID_LABELS.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
-                {isScannable && (
-                  <p className="text-sm text-green-700 font-semibold mt-1.5 flex items-center gap-1">
-                    ✨ This ID supports auto-scan — we can extract your details automatically!
-                  </p>
-                )}
               </div>
 
               {/* Step 2: pick file or camera */}
@@ -545,7 +498,7 @@ export default function ProfilePage() {
                   <div className="relative border-2 border-green-500 rounded-2xl overflow-hidden bg-green-50">
                     <img src={uploadPreview} alt="Preview" className="w-full object-contain max-h-52" />
                     <button
-                      onClick={() => { setUploadFile(null); setUploadPreview(null); setScanResult(null); setScanApplied(false); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                      onClick={() => { setUploadFile(null); setUploadPreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
                       className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-lg"
                     >✕ Remove</button>
                   </div>
@@ -569,7 +522,7 @@ export default function ProfilePage() {
                         ref={fileInputRef}
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
-                        onChange={e => { handleFileChange(e); setScanResult(null); setScanApplied(false); }}
+                        onChange={handleFileChange}
                         className="sr-only"
                       />
                     </label>
@@ -583,62 +536,10 @@ export default function ProfilePage() {
                   onCapture={(file, preview) => {
                     setUploadFile(file);
                     setUploadPreview(preview);
-                    setScanResult(null);
-                    setScanApplied(false);
                     setShowCamera(false);
                   }}
                   onClose={() => setShowCamera(false)}
                 />
-              )}
-
-              {/* Step 3: scan (PhilSys / Senior ID only) */}
-              {uploadFile && isScannable && !scanApplied && (
-                <div className="bg-white border-2 border-green-300 rounded-2xl p-4 space-y-3">
-                  <p className="text-base font-bold text-green-800">Step 3 — Auto-Scan ID</p>
-                  <p className="text-sm text-gray-500">We&apos;ll read the details from your ID and fill in your profile automatically.</p>
-
-                  {!scanResult ? (
-                    <button
-                      onClick={handleScanId}
-                      disabled={scanLoading}
-                      className="w-full flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition text-lg"
-                    >
-                      {scanLoading ? '⏳ Scanning...' : '🔍 Scan ID Now'}
-                    </button>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="text-sm font-semibold text-green-700">✅ Data extracted! Review below:</p>
-                      <div className="bg-green-50 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
-                        {Object.entries(scanResult).filter(([, v]) => v).map(([k, v]) => (
-                          <div key={k}>
-                            <span className="text-gray-500 capitalize">{k.replace(/([A-Z])/g, ' $1')}: </span>
-                            <span className="font-semibold text-gray-800">{v}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={handleApplyScan}
-                          className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl transition"
-                        >
-                          ✅ Apply to Profile
-                        </button>
-                        <button
-                          onClick={() => setScanResult(null)}
-                          className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-3 rounded-xl transition text-sm"
-                        >
-                          Re-scan
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {scanApplied && (
-                <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-xl text-base font-semibold">
-                  ✅ Profile fields filled from scan! Review and save your changes above.
-                </div>
               )}
 
               {/* Upload button */}
