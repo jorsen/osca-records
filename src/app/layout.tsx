@@ -23,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         {children}
+        <footer className="print:hidden text-center py-4 text-xs text-gray-400 border-t border-gray-100 bg-white">
+          Developed by <span className="font-semibold text-green-700">Joy Sussane Sandro</span>
+        </footer>
         <script dangerouslySetInnerHTML={{
           __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'))}`
         }} />
