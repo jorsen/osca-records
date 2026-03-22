@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#15803d"/>
+  <rect x="80" y="200" width="352" height="220" rx="12" fill="#fff" opacity="0.95"/>
+  <rect x="176" y="140" width="160" height="80" rx="8" fill="#fff" opacity="0.95"/>
+  <rect x="112" y="240" width="288" height="16" rx="6" fill="#15803d" opacity="0.3"/>
+  <rect x="112" y="272" width="200" height="12" rx="5" fill="#15803d" opacity="0.3"/>
+  <rect x="112" y="300" width="240" height="12" rx="5" fill="#15803d" opacity="0.3"/>
+  <rect x="112" y="328" width="180" height="12" rx="5" fill="#15803d" opacity="0.3"/>
+  <text x="256" y="198" font-family="Arial,sans-serif" font-size="52" font-weight="900" fill="#15803d" text-anchor="middle">OSCA</text>
+</svg>

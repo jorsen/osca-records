@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyPassword, generateToken } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 const prisma = new PrismaClient();
 
@@ -33,11 +34,14 @@ export async function POST(request: NextRequest) {
     const isValidPassword = await verifyPassword(password, user.password);
 
     if (!isValidPassword) {
+      await logAudit('LOGIN_FAILED', username, null, 'Invalid password');
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
       );
     }
+
+    await logAudit('LOGIN', user.fullName || user.username, null, `Role: ${user.role}`);
 
     // Generate token
     const token = generateToken(user.id, user.role);

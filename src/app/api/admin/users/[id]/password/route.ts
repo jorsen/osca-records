@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyTokenFull, hashPassword } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +28,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 
   const hashed = await hashPassword(password);
+  const target = await prisma.user.findUnique({ where: { id: params.id }, select: { fullName: true, username: true } });
   await prisma.user.update({ where: { id: params.id }, data: { password: hashed } });
+  await logAudit('CHANGE_PASSWORD', 'Admin', target?.fullName || target?.username || params.id, 'Password changed');
 
   return NextResponse.json({ message: 'Password updated successfully' });
 }

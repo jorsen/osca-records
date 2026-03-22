@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { del } from '@vercel/blob';
 import { verifyTokenFull } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 const prisma = new PrismaClient();
 
@@ -61,11 +62,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     },
   });
 
+  await logAudit('EDIT_RECORD', 'Admin', user.fullName || user.username, 'Record updated');
   return NextResponse.json(user);
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   if (!requireSuperAdmin(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const target = await prisma.user.findUnique({ where: { id: params.id }, select: { fullName: true, username: true } });
 
   // Clean up blob files before deleting user
   const docs = await prisma.idDocument.findMany({ where: { userId: params.id }, select: { url: true } });
@@ -74,5 +78,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   }
 
   await prisma.user.delete({ where: { id: params.id } });
+  await logAudit('DELETE_RECORD', 'Admin', target?.fullName || target?.username || params.id, 'Record deleted');
   return NextResponse.json({ message: 'User deleted successfully' });
 }
