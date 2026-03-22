@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState('');
+  const [pensionerFilter, setPensionerFilter] = useState<'all' | 'yes' | 'no'>('all');
 
   // Edit modal
   const [editUser, setEditUser] = useState<UserRecord | null>(null);
@@ -88,13 +89,16 @@ export default function AdminPage() {
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
-    return (
+    const matchesSearch =
       (u.fullName?.toLowerCase().includes(q) ?? false) ||
       u.username.toLowerCase().includes(q) ||
       (u.seniorIdNumber?.includes(q) ?? false) ||
       (u.nationalIdNumber?.includes(q) ?? false) ||
-      (u.address?.toLowerCase().includes(q) ?? false)
-    );
+      (u.address?.toLowerCase().includes(q) ?? false);
+    const matchesPensioner =
+      pensionerFilter === 'all' ||
+      (pensionerFilter === 'yes' ? u.pensioner === true : u.pensioner !== true);
+    return matchesSearch && matchesPensioner;
   });
 
   // ── Edit ────────────────────────────────────────────
@@ -207,13 +211,24 @@ export default function AdminPage() {
               All Records
               <span className="ml-2 text-sm font-normal text-gray-500">({filtered.length} of {users.length})</span>
             </h2>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, username, ID..."
-              className="w-full md:w-72 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-            />
+            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+              <select
+                value={pensionerFilter}
+                onChange={(e) => setPensionerFilter(e.target.value as 'all' | 'yes' | 'no')}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white"
+              >
+                <option value="all">All Members</option>
+                <option value="yes">Pensioners Only</option>
+                <option value="no">Non-Pensioners Only</option>
+              </select>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, username, ID..."
+                className="w-full md:w-72 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              />
+            </div>
           </div>
 
           {loading ? (
