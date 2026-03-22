@@ -51,6 +51,12 @@ export default function ProfilePage() {
         return;
       }
 
+      const role = localStorage.getItem('user_role');
+      if (role === 'SUPERADMIN') {
+        router.push('/admin');
+        return;
+      }
+
       const res = await fetch('/api/profile', {
         headers: { Authorization: `Bearer ${token}` },
       });
