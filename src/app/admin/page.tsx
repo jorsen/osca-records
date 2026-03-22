@@ -250,7 +250,7 @@ export default function AdminPage() {
   const thPlain = 'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen overflow-hidden bg-gray-50 flex flex-col">
 
       {/* ══ PRINT-ONLY LAYOUT ══ */}
       <div className="hidden print:block font-sans" style={{ fontSize: '7pt', padding: '0' }}>
@@ -294,7 +294,7 @@ export default function AdminPage() {
       </div>
 
       {/* ══ SCREEN LAYOUT ══ */}
-      <div className="print:hidden flex flex-col min-h-screen">
+      <div className="print:hidden flex flex-col flex-1 overflow-hidden">
 
         {/* ── Header ── */}
         <header className="bg-white border-b-4 border-green-700 px-4 sm:px-6 py-4 flex justify-between items-center shadow-sm">
@@ -313,7 +313,7 @@ export default function AdminPage() {
           </button>
         </header>
 
-        <div className="flex-1 px-4 sm:px-6 py-6 space-y-6">
+        <div className="flex-1 px-4 sm:px-6 py-6 flex flex-col gap-6 overflow-hidden">
 
           {/* ── Stats Cards ── */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -336,7 +336,7 @@ export default function AdminPage() {
           </div>
 
           {/* ── Table Card ── */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
 
             {/* Toolbar */}
             <div className="px-4 sm:px-6 py-4 border-b border-gray-100 space-y-3">
@@ -378,6 +378,7 @@ export default function AdminPage() {
               </div>
             </div>
 
+            <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="text-center py-20 text-gray-400">
                 <div className="text-5xl mb-3 animate-pulse">⏳</div>
@@ -522,6 +523,7 @@ export default function AdminPage() {
                 </div>
               </>
             )}
+            </div>
           </div>
         </div>
 
