@@ -207,7 +207,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-green-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">⏳</div>
           <p className="text-2xl text-gray-600 font-semibold">Loading your profile...</p>
@@ -216,7 +216,7 @@ export default function ProfilePage() {
     );
   }
 
-  const inputClass = 'w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
+  const inputClass = 'w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200';
   const labelClass = 'block text-lg font-semibold text-gray-700 mb-2';
 
   const InfoRow = ({ label, value }: { label: string; value: string | number | null | boolean | undefined }) => (
@@ -229,13 +229,13 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen bg-green-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex justify-between items-center shadow-sm">
+      <header className="bg-white border-b-4 border-green-700 px-6 py-5 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-3">
           <span className="text-4xl">🏛️</span>
           <div>
-            <h1 className="text-2xl font-bold text-blue-700">OSCA Records</h1>
+            <h1 className="text-2xl font-bold text-green-800">OSCA Records</h1>
             <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function ProfilePage() {
         {/* Profile Card */}
         <div className="bg-white rounded-3xl shadow-lg p-8">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-5xl shrink-0">
+            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-5xl shrink-0">
               {profile.gender === 'female' ? '👵' : '👴'}
             </div>
             <div className="text-center sm:text-left">
@@ -270,7 +270,7 @@ export default function ProfilePage() {
                   <span className="bg-green-100 text-green-700 text-base font-semibold px-4 py-1 rounded-full">✅ Pensioner</span>
                 )}
                 {profile.age && (
-                  <span className="bg-blue-100 text-blue-700 text-base font-semibold px-4 py-1 rounded-full">🎂 {profile.age} years old</span>
+                  <span className="bg-green-100 text-green-800 text-base font-semibold px-4 py-1 rounded-full">🎂 {profile.age} years old</span>
                 )}
                 {profile.hasNoId && (
                   <span className="bg-yellow-100 text-yellow-700 text-base font-semibold px-4 py-1 rounded-full">📋 No Other ID</span>
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                       name="hasNoId"
                       checked={formData.hasNoId}
                       onChange={handleChange}
-                      className="w-7 h-7 rounded border-2 border-gray-300 accent-blue-600"
+                      className="w-7 h-7 rounded border-2 border-gray-300 accent-green-700"
                     />
                     <span className="text-xl font-semibold text-gray-700">I have no other IDs</span>
                   </label>
@@ -402,7 +402,7 @@ export default function ProfilePage() {
               <h3 className="text-2xl font-bold text-gray-800">My Information</h3>
               <button
                 onClick={() => setIsEditing(true)}
-                className="print:hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-6 py-3 rounded-xl transition"
+                className="print:hidden flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white text-lg font-semibold px-6 py-3 rounded-xl transition"
               >
                 ✏️ Edit
               </button>
@@ -410,7 +410,7 @@ export default function ProfilePage() {
 
             <div className="divide-y divide-gray-100">
               <div className="py-3">
-                <p className="text-base font-bold text-blue-600 uppercase tracking-wide mb-2">Personal Details</p>
+                <p className="text-base font-bold text-green-700 uppercase tracking-wide mb-2">Personal Details</p>
                 <InfoRow label="Full Name" value={profile.fullName} />
                 <InfoRow label="Birthday" value={profile.birthday ? new Date(profile.birthday).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) : null} />
                 <InfoRow label="Birthplace" value={profile.birthplace} />
@@ -420,7 +420,7 @@ export default function ProfilePage() {
                 <InfoRow label="Relationship Status" value={profile.relationshipStatus ? profile.relationshipStatus.charAt(0).toUpperCase() + profile.relationshipStatus.slice(1) : null} />
               </div>
               <div className="py-3 mt-2">
-                <p className="text-base font-bold text-blue-600 uppercase tracking-wide mb-2 mt-2">ID Information</p>
+                <p className="text-base font-bold text-green-700 uppercase tracking-wide mb-2 mt-2">ID Information</p>
                 <InfoRow label="Senior ID Number" value={profile.seniorIdNumber} />
                 {!profile.hasNoId && (
                   <>
@@ -467,7 +467,7 @@ export default function ProfilePage() {
           )}
 
           {/* Upload new */}
-          <div className="print:hidden border-2 border-dashed border-blue-200 rounded-2xl p-6 space-y-4 bg-blue-50/40">
+          <div className="print:hidden border-2 border-dashed border-green-200 rounded-2xl p-6 space-y-4 bg-green-50/40">
             <p className="text-lg font-semibold text-gray-700">📎 Upload ID Photo</p>
             {uploadError && (
               <div className="text-red-600 text-base font-medium bg-red-50 px-4 py-2 rounded-xl">⚠️ {uploadError}</div>
@@ -478,7 +478,7 @@ export default function ProfilePage() {
                 <select
                   value={uploadLabel}
                   onChange={e => setUploadLabel(e.target.value)}
-                  className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white focus:outline-none focus:border-green-600"
                 >
                   {ID_LABELS.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
@@ -490,7 +490,7 @@ export default function ProfilePage() {
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   onChange={handleFileChange}
-                  className="w-full text-base text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer"
+                  className="w-full text-base text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-green-100 file:text-green-800 hover:file:bg-green-200 cursor-pointer"
                 />
               </div>
             </div>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
             <button
               onClick={handleUploadId}
               disabled={!uploadFile || uploadLoading}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-xl font-bold px-8 py-4 rounded-2xl transition"
+              className="bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white text-xl font-bold px-8 py-4 rounded-2xl transition"
             >
               {uploadLoading ? '⏳ Uploading...' : '📤 Upload ID'}
             </button>

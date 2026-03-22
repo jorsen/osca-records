@@ -47,12 +47,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen bg-green-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex items-center gap-3 shadow-sm">
+      <header className="bg-white border-b-4 border-green-700 px-6 py-5 flex items-center gap-3 shadow-sm">
         <span className="text-4xl">🏛️</span>
         <div>
-          <h1 className="text-2xl font-bold text-blue-700">OSCA Records</h1>
+          <h1 className="text-2xl font-bold text-green-800">OSCA Records</h1>
           <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
         </div>
       </header>
@@ -86,7 +86,7 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200"
                 placeholder="Enter your username"
                 required
                 autoComplete="username"
@@ -101,7 +101,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200"
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
@@ -111,7 +111,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-2xl font-bold py-5 rounded-2xl transition shadow-md mt-2"
+              className="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-400 text-white text-2xl font-bold py-5 rounded-2xl transition shadow-md mt-2"
             >
               {loading ? '⏳ Signing in...' : '🔑 Sign In'}
             </button>

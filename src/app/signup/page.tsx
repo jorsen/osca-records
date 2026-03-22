@@ -95,16 +95,16 @@ export default function SignupPage() {
     }
   };
 
-  const ic = 'w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
+  const ic = 'w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-200';
   const lc = 'block text-xl font-semibold text-gray-700 mb-2';
   const sc = `${ic} bg-white`;
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
-      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex items-center gap-3 shadow-sm">
+    <div className="min-h-screen bg-green-50 flex flex-col">
+      <header className="bg-white border-b-4 border-green-700 px-6 py-5 flex items-center gap-3 shadow-sm">
         <span className="text-4xl">🏛️</span>
         <div>
-          <h1 className="text-2xl font-bold text-blue-700">OSCA Records</h1>
+          <h1 className="text-2xl font-bold text-green-800">OSCA Records</h1>
           <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
         </div>
       </header>
@@ -123,11 +123,11 @@ export default function SignupPage() {
               <div key={i} className="flex items-center gap-1">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-base border-2 transition-all ${
                   i < step ? 'bg-green-500 border-green-500 text-white' :
-                  i === step ? 'bg-blue-600 border-blue-600 text-white' :
+                  i === step ? 'bg-green-700 border-green-700 text-white' :
                   'bg-white border-gray-300 text-gray-400'}`}>
                   {i < step ? '✓' : i + 1}
                 </div>
-                <span className={`text-xs font-medium hidden sm:block ${i === step ? 'text-blue-600' : 'text-gray-400'}`}>{label}</span>
+                <span className={`text-xs font-medium hidden sm:block ${i === step ? 'text-green-700' : 'text-gray-400'}`}>{label}</span>
                 {i < STEPS.length - 1 && <div className={`w-6 h-1 rounded ${i < step ? 'bg-green-400' : 'bg-gray-200'}`} />}
               </div>
             ))}
@@ -212,7 +212,7 @@ export default function SignupPage() {
 
                 {/* Senior ID — always shown */}
                 <div>
-                  <label className={lc}>Senior ID Number <span className="text-blue-600 text-base font-normal">(Always required)</span></label>
+                  <label className={lc}>Senior ID Number <span className="text-green-700 text-base font-normal">(Always required)</span></label>
                   <input type="text" name="seniorIdNumber" value={formData.seniorIdNumber} onChange={handleChange} className={ic} placeholder="16-digit OSCA Senior ID" maxLength={16} minLength={16} pattern="\d{16}" title="Must be exactly 16 digits" />
                   <p className="text-gray-400 text-base mt-1">Must be exactly 16 digits</p>
                 </div>
@@ -243,7 +243,7 @@ export default function SignupPage() {
                   <label className={lc}>Are you a Pensioner?</label>
                   <div className="grid grid-cols-2 gap-4 mt-1">
                     {['no', 'yes'].map((val) => (
-                      <label key={val} className={`flex items-center justify-center gap-3 py-4 px-5 rounded-xl border-2 cursor-pointer text-xl font-semibold transition ${formData.pensioner === val ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`}>
+                      <label key={val} className={`flex items-center justify-center gap-3 py-4 px-5 rounded-xl border-2 cursor-pointer text-xl font-semibold transition ${formData.pensioner === val ? 'border-green-700 bg-green-50 text-green-800' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`}>
                         <input type="radio" name="pensioner" value={val} checked={formData.pensioner === val} onChange={handleChange} className="sr-only" />
                         {val === 'yes' ? '✅ Yes' : '❌ No'}
                       </label>
@@ -269,7 +269,7 @@ export default function SignupPage() {
                   </select>
                 </div>
 
-                <label className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition ${uploading ? 'border-blue-300 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'}`}>
+                <label className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition ${uploading ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-green-600 hover:bg-green-50'}`}>
                   <span className="text-5xl">{uploading ? '⏳' : '📷'}</span>
                   <span className="text-lg font-semibold text-gray-700">{uploading ? 'Uploading...' : 'Tap to Upload ID Photo'}</span>
                   <span className="text-sm text-gray-400">JPG or PNG, max 5MB</span>
@@ -300,7 +300,7 @@ export default function SignupPage() {
                 <button type="button" onClick={prevStep} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xl font-bold py-4 rounded-2xl transition">← Back</button>
               )}
               {step < STEPS.length - 1 ? (
-                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-4 rounded-2xl transition shadow-md">Next →</button>
+                <button type="submit" className="flex-1 bg-green-700 hover:bg-green-800 text-white text-xl font-bold py-4 rounded-2xl transition shadow-md">Next →</button>
               ) : (
                 <button type="submit" disabled={loading} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-xl font-bold py-4 rounded-2xl transition shadow-md">
                   {loading ? '⏳ Creating Account...' : '✅ Create Account'}
@@ -311,7 +311,7 @@ export default function SignupPage() {
 
           <div className="mt-8 text-center border-t-2 border-gray-100 pt-6">
             <p className="text-xl text-gray-600">Already have an account?</p>
-            <Link href="/login" className="inline-block mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-4 px-10 rounded-2xl transition">🔑 Sign In Here</Link>
+            <Link href="/login" className="inline-block mt-3 bg-green-700 hover:bg-green-800 text-white text-xl font-bold py-4 px-10 rounded-2xl transition">🔑 Sign In Here</Link>
           </div>
         </div>
       </div>

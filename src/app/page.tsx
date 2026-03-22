@@ -4,19 +4,19 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen bg-green-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex justify-between items-center shadow-sm">
+      <header className="bg-white border-b-4 border-green-700 px-6 py-5 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-3">
           <span className="text-4xl">🏛️</span>
           <div>
-            <h1 className="text-2xl font-bold text-blue-700 leading-tight">OSCA Records</h1>
+            <h1 className="text-2xl font-bold text-green-800 leading-tight">OSCA Records</h1>
             <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
           </div>
         </div>
         <Link
           href="/login"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-6 py-3 rounded-xl transition"
+          className="bg-green-700 hover:bg-green-800 text-white text-lg font-semibold px-6 py-3 rounded-xl transition"
         >
           Login
         </Link>
@@ -36,7 +36,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <Link
               href="/login"
-              className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-5 px-10 rounded-2xl transition shadow-lg"
+              className="flex items-center justify-center gap-3 bg-green-700 hover:bg-green-800 text-white text-xl font-bold py-5 px-10 rounded-2xl transition shadow-lg"
             >
               <span className="text-2xl">🔑</span> I Already Have an Account
             </Link>
@@ -60,7 +60,7 @@ export default function Home() {
             ].map(({ icon, step, title, desc }) => (
               <div key={step} className="bg-white rounded-2xl shadow-md p-8 flex flex-col items-center text-center">
                 <div className="text-5xl mb-3">{icon}</div>
-                <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg mb-3">
+                <div className="w-10 h-10 bg-green-100 text-green-800 rounded-full flex items-center justify-center font-bold text-lg mb-3">
                   {step}
                 </div>
                 <h4 className="text-xl font-bold text-gray-800 mb-2">{title}</h4>

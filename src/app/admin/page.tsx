@@ -43,7 +43,7 @@ const ID_LABELS = [
   'TIN ID', 'PRC ID', 'Other ID',
 ];
 
-const inputClass = 'w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white';
+const inputClass = 'w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 bg-white';
 const labelClass = 'block text-sm font-semibold text-gray-600 mb-1 uppercase tracking-wide';
 
 const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString('en-PH') : '—';
@@ -105,7 +105,7 @@ export default function AdminPage() {
   };
 
   const SortIcon = ({ field }: { field: SortField }) => (
-    <span className={`ml-1 ${sortBy === field ? 'text-blue-600' : 'text-gray-300'}`}>
+    <span className={`ml-1 ${sortBy === field ? 'text-green-700' : 'text-gray-300'}`}>
       {sortBy === field ? (order === 'asc' ? '▲' : '▼') : '⇅'}
     </span>
   );
@@ -246,7 +246,7 @@ export default function AdminPage() {
     router.push('/login');
   };
 
-  const thClass = 'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 cursor-pointer hover:bg-blue-50 select-none whitespace-nowrap';
+  const thClass = 'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 cursor-pointer hover:bg-green-50 select-none whitespace-nowrap';
   const thPlain = 'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap';
 
   return (
@@ -311,11 +311,11 @@ export default function AdminPage() {
       <div className="print:hidden flex flex-col min-h-screen">
 
         {/* ── Header ── */}
-        <header className="bg-white border-b-4 border-blue-600 px-4 sm:px-6 py-4 flex justify-between items-center shadow-sm">
+        <header className="bg-white border-b-4 border-green-700 px-4 sm:px-6 py-4 flex justify-between items-center shadow-sm">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🏛️</span>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-blue-700 leading-tight">OSCA Records</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-green-800 leading-tight">OSCA Records</h1>
               <p className="text-xs text-gray-400">Admin Dashboard</p>
             </div>
           </div>
@@ -332,7 +332,7 @@ export default function AdminPage() {
           {/* ── Stats Cards ── */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {[
-              { label: 'Total', fullLabel: 'Total Members', value: users.length, icon: '👥', color: 'bg-blue-600' },
+              { label: 'Total', fullLabel: 'Total Members', value: users.length, icon: '👥', color: 'bg-green-700' },
               { label: 'Pensioners', fullLabel: 'Pensioners', value: totalPensioners, icon: '✅', color: 'bg-green-600' },
               { label: 'Non-Pension', fullLabel: 'Non-Pensioners', value: totalNonPensioners, icon: '📋', color: 'bg-orange-500' },
             ].map(({ label, fullLabel, value, icon, color }) => (
@@ -373,7 +373,7 @@ export default function AdminPage() {
                 <select
                   value={pensionerFilter}
                   onChange={(e) => setPensionerFilter(e.target.value as 'all' | 'yes' | 'no')}
-                  className="w-full sm:w-auto px-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm bg-white font-medium"
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-600 text-sm bg-white font-medium"
                 >
                   <option value="all">👥 All Members</option>
                   <option value="yes">✅ Pensioners Only</option>
@@ -386,7 +386,7 @@ export default function AdminPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search name, username, ID..."
-                    className="pl-9 pr-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-full sm:w-72"
+                    className="pl-9 pr-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-600 text-sm w-full sm:w-72"
                   />
                 </div>
               </div>
@@ -411,12 +411,12 @@ export default function AdminPage() {
                     <div key={user.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
                       {/* Card header */}
-                      <div className="bg-blue-600 px-4 py-3 flex justify-between items-start gap-3">
+                      <div className="bg-green-700 px-4 py-3 flex justify-between items-start gap-3">
                         <div className="min-w-0">
                           <p className="text-white font-bold text-base leading-tight truncate">
                             {user.fullName || <span className="italic opacity-70">No name on file</span>}
                           </p>
-                          <p className="text-blue-200 text-sm mt-0.5">@{user.username}</p>
+                          <p className="text-green-200 text-sm mt-0.5">@{user.username}</p>
                         </div>
                         <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${user.pensioner ? 'bg-green-400 text-white' : 'bg-white/20 text-white'}`}>
                           {user.pensioner ? '✅ Pensioner' : 'Non-Pensioner'}
@@ -466,7 +466,7 @@ export default function AdminPage() {
                       <div className="border-t border-gray-100 grid grid-cols-3 divide-x divide-gray-100">
                         <button
                           onClick={() => openEdit(user)}
-                          className="flex items-center justify-center gap-2 py-3 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition active:bg-blue-100"
+                          className="flex items-center justify-center gap-2 py-3 text-green-700 font-semibold text-sm hover:bg-green-50 transition active:bg-green-100"
                         >
                           ✏️ Edit
                         </button>
@@ -514,7 +514,7 @@ export default function AdminPage() {
                     </thead>
                     <tbody>
                       {filtered.map((user, i) => (
-                        <tr key={user.id} className={`border-b border-gray-50 hover:bg-blue-50 transition ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}`}>
+                        <tr key={user.id} className={`border-b border-gray-50 hover:bg-green-50 transition ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}`}>
                           <td className="px-3 py-3 font-semibold text-gray-800 truncate">{user.fullName || <span className="text-gray-300 font-normal italic">—</span>}</td>
                           <td className="px-3 py-3 text-gray-500 truncate text-xs">@{user.username}</td>
                           <td className="px-3 py-3 text-gray-700 font-medium">{user.age ?? <span className="text-gray-300">—</span>}</td>
@@ -532,7 +532,7 @@ export default function AdminPage() {
                           <td className="px-3 py-3 text-gray-500 text-xs">{fmt(user.createdAt)}</td>
                           <td className="px-3 py-3">
                             <div className="flex gap-1">
-                              <button onClick={() => openEdit(user)} title="Edit record" className="w-8 h-8 flex items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition text-sm">✏️</button>
+                              <button onClick={() => openEdit(user)} title="Edit record" className="w-8 h-8 flex items-center justify-center bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition text-sm">✏️</button>
                               <button onClick={() => openPassword(user)} title="Change password" className="w-8 h-8 flex items-center justify-center bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition text-sm">🔑</button>
                               <button onClick={() => setDeleteUser(user)} title="Delete record" className="w-8 h-8 flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition text-sm">🗑️</button>
                             </div>
@@ -614,7 +614,7 @@ export default function AdminPage() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="flex items-center gap-3 cursor-pointer">
-                      <input type="checkbox" checked={editForm.hasNoId} onChange={e => setEditForm(p => ({ ...p, hasNoId: e.target.checked }))} className="w-5 h-5 rounded accent-blue-600" />
+                      <input type="checkbox" checked={editForm.hasNoId} onChange={e => setEditForm(p => ({ ...p, hasNoId: e.target.checked }))} className="w-5 h-5 rounded accent-green-700" />
                       <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">I have no other IDs</span>
                     </label>
                   </div>
@@ -632,7 +632,7 @@ export default function AdminPage() {
                   )}
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <button type="submit" disabled={editLoading} className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition">
+                  <button type="submit" disabled={editLoading} className="flex-1 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition">
                     {editLoading ? '⏳ Saving...' : '💾 Save Changes'}
                   </button>
                   <button type="button" onClick={() => setEditUser(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition">
@@ -684,7 +684,7 @@ export default function AdminPage() {
                             setUploadError(''); setUploadFile(file);
                             setUploadPreview(URL.createObjectURL(file));
                           }}
-                          className="w-full text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer"
+                          className="w-full text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-100 file:text-green-800 hover:file:bg-green-200 cursor-pointer"
                         />
                       </div>
                     </div>
@@ -697,7 +697,7 @@ export default function AdminPage() {
                     <button
                       onClick={handleUploadDoc}
                       disabled={!uploadFile || uploadLoading}
-                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition"
+                      className="bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition"
                     >
                       {uploadLoading ? '⏳ Uploading...' : '📤 Upload ID'}
                     </button>
