@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate token
-    const token = generateToken(user.id);
+    const token = generateToken(user.id, user.role);
 
     const response = NextResponse.json(
       {
@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
           id: user.id,
           username: user.username,
           fullName: user.fullName,
+          role: user.role,
         },
       },
       { status: 200 }

@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -30,11 +31,13 @@ export default function LoginPage() {
         return;
       }
 
-      // Store token in localStorage
       localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('user_role', data.user.role);
 
-      // Redirect to profile page
-      router.push('/profile');
+      setSuccess('Login successful! Redirecting...');
+      setTimeout(() => {
+        router.push(data.user.role === 'SUPERADMIN' ? '/admin' : '/profile');
+      }, 1500);
     } catch (err) {
       setError('An error occurred. Please try again.');
       console.error(err);
@@ -49,6 +52,12 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
           OSCA Records
         </h1>
+
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+            {success}
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
