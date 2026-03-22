@@ -18,8 +18,14 @@ export default function SignupPage() {
     pensioner: 'no', hasNoId: false,
   });
   const [idDocuments, setIdDocuments] = useState<UploadedDoc[]>([]);
-  const [uploadingLabel, setUploadingLabel] = useState('Senior ID Card');
+  const [uploadingLabel, setUploadingLabel] = useState('Senior Citizen ID');
   const [uploading, setUploading] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [scanLoading, setScanLoading] = useState(false);
+  const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
+  const [scanApplied, setScanApplied] = useState(false);
+  const isScannable = uploadingLabel === 'PhilSys ID' || uploadingLabel === 'Senior Citizen ID';
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -51,23 +57,70 @@ export default function SignupPage() {
   const nextStep = () => { if (!validateStep()) return; setError(''); setStep(s => s + 1); };
   const prevStep = () => { setError(''); setStep(s => s - 1); };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
-    setError('');
+    setPendingFile(file);
+    setUploadPreview(URL.createObjectURL(file));
+    setScanResult(null);
+    setScanApplied(false);
+  };
+
+  const clearPending = () => {
+    setPendingFile(null);
+    setUploadPreview(null);
+    setScanResult(null);
+    setScanApplied(false);
+  };
+
+  const handleScanId = async () => {
+    if (!pendingFile) return;
+    setScanLoading(true); setScanResult(null); setError('');
     try {
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', pendingFile);
+      fd.append('idType', uploadingLabel);
+      const res = await fetch('/api/scan-id', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok) { setError(json.error || 'Scan failed'); return; }
+      setScanResult(json.data);
+    } catch {
+      setError('Scan failed. Please try again or fill in manually.');
+    } finally {
+      setScanLoading(false);
+    }
+  };
+
+  const handleApplyScan = () => {
+    if (!scanResult) return;
+    setFormData(prev => ({
+      ...prev,
+      fullName: scanResult.fullName || prev.fullName,
+      birthday: scanResult.birthday || prev.birthday,
+      gender: scanResult.gender || prev.gender,
+      address: scanResult.address || prev.address,
+      birthplace: scanResult.birthplace || prev.birthplace,
+      seniorIdNumber: scanResult.seniorIdNumber || prev.seniorIdNumber,
+      philsysId: scanResult.philsysId || prev.philsysId,
+    }));
+    setScanApplied(true);
+  };
+
+  const handleUploadDoc = async () => {
+    if (!pendingFile) return;
+    setUploading(true); setError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', pendingFile);
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Upload failed'); return; }
       setIdDocuments(prev => [...prev, { label: uploadingLabel, url: data.url }]);
+      clearPending();
     } catch {
       setError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
-      e.target.value = '';
     }
   };
 
@@ -256,41 +309,125 @@ export default function SignupPage() {
             {/* Step 4 — ID Photos */}
             {step === 3 && (
               <div className="space-y-5">
-                <p className="text-lg text-gray-500 mb-2">Upload photos of your ID cards. This is optional but recommended.</p>
+                <p className="text-lg text-gray-500">Upload photos of your IDs. This is optional but recommended.</p>
 
-                <div className="flex gap-3">
-                  <select value={uploadingLabel} onChange={e => setUploadingLabel(e.target.value)} className={`${sc} flex-1`}>
-                    <option>Senior ID Card</option>
-                    <option>PhilSys ID</option>
-                    <option>SSS / GSIS ID</option>
-                    <option>Passport</option>
-                    <option>Driver&apos;s License</option>
-                    <option>Other ID</option>
-                  </select>
-                </div>
-
-                <label className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition ${uploading ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-green-600 hover:bg-green-50'}`}>
-                  <span className="text-5xl">{uploading ? '⏳' : '📷'}</span>
-                  <span className="text-lg font-semibold text-gray-700">{uploading ? 'Uploading...' : 'Tap to Upload ID Photo'}</span>
-                  <span className="text-sm text-gray-400">JPG or PNG, max 5MB</span>
-                  <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} className="sr-only" />
-                </label>
-
+                {/* Uploaded list */}
                 {idDocuments.length > 0 && (
                   <div className="space-y-3">
-                    <p className="font-semibold text-gray-700 text-lg">Uploaded ({idDocuments.length}):</p>
+                    <p className="font-bold text-gray-700 text-base">Uploaded ({idDocuments.length}):</p>
                     {idDocuments.map((doc, i) => (
                       <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl border border-gray-200">
-                        <img src={doc.url} alt={doc.label} className="w-20 h-14 object-cover rounded-xl border border-gray-200" />
+                        <img src={doc.url} alt={doc.label} className="w-20 h-14 object-cover rounded-xl border border-gray-200 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-gray-800">{doc.label}</p>
-                          <p className="text-xs text-gray-400 truncate">{doc.url}</p>
                         </div>
                         <button type="button" onClick={() => removeDoc(i)} className="text-red-500 hover:text-red-700 text-2xl font-bold shrink-0">&times;</button>
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* Upload widget */}
+                <div className="border-2 border-green-200 rounded-2xl p-4 bg-green-50/30 space-y-4">
+
+                  {/* 1. ID type */}
+                  <div>
+                    <label className="block text-base font-semibold text-gray-600 mb-1">Step 1 — ID Type</label>
+                    <select
+                      value={uploadingLabel}
+                      onChange={e => { setUploadingLabel(e.target.value); setScanResult(null); setScanApplied(false); }}
+                      className={sc}
+                    >
+                      <option>Senior Citizen ID</option>
+                      <option>PhilSys ID</option>
+                      <option>SSS / GSIS ID</option>
+                      <option>Passport</option>
+                      <option>Driver&apos;s License</option>
+                      <option>Other ID</option>
+                    </select>
+                    {isScannable && (
+                      <p className="text-sm text-green-700 font-semibold mt-1 flex items-center gap-1">
+                        ✨ Supports auto-scan — we can fill your details automatically!
+                      </p>
+                    )}
+                  </div>
+
+                  {/* 2. Photo picker */}
+                  <div>
+                    <label className="block text-base font-semibold text-gray-600 mb-1">Step 2 — Take or Choose Photo</label>
+                    <label className={`flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed rounded-2xl cursor-pointer transition
+                      ${pendingFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-500 hover:bg-green-50/50'}`}>
+                      {uploadPreview
+                        ? <img src={uploadPreview} alt="Preview" className="h-36 w-full max-w-xs object-contain rounded-xl" />
+                        : <>
+                            <span className="text-5xl">📷</span>
+                            <span className="text-lg font-semibold text-gray-600">Tap to choose photo</span>
+                            <span className="text-sm text-gray-400">JPG, PNG or WEBP · max 5 MB</span>
+                          </>
+                      }
+                      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePickFile} disabled={uploading} className="sr-only" />
+                    </label>
+                    {pendingFile && (
+                      <button type="button" onClick={clearPending} className="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold">✕ Remove photo</button>
+                    )}
+                  </div>
+
+                  {/* 3. Scan (PhilSys / Senior only) */}
+                  {pendingFile && isScannable && !scanApplied && (
+                    <div className="bg-white border-2 border-green-300 rounded-2xl p-4 space-y-3">
+                      <p className="text-base font-bold text-green-800">Step 3 — Auto-Scan ID</p>
+                      <p className="text-sm text-gray-500">We&apos;ll read your details from the ID and fill in your registration form automatically.</p>
+                      {!scanResult ? (
+                        <button
+                          type="button"
+                          onClick={handleScanId}
+                          disabled={scanLoading}
+                          className="w-full flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition text-lg"
+                        >
+                          {scanLoading ? '⏳ Scanning...' : '🔍 Scan ID Now'}
+                        </button>
+                      ) : (
+                        <div className="space-y-3">
+                          <p className="text-sm font-semibold text-green-700">✅ Data extracted! Review below:</p>
+                          <div className="bg-green-50 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                            {Object.entries(scanResult).filter(([, v]) => v).map(([k, v]) => (
+                              <div key={k}>
+                                <span className="text-gray-500 capitalize">{k.replace(/([A-Z])/g, ' $1')}: </span>
+                                <span className="font-semibold text-gray-800">{v}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-3">
+                            <button type="button" onClick={handleApplyScan} className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl transition">
+                              ✅ Apply to Form
+                            </button>
+                            <button type="button" onClick={() => setScanResult(null)} className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-3 rounded-xl transition text-sm">
+                              Re-scan
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {scanApplied && (
+                    <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-xl text-base font-semibold">
+                      ✅ Form fields updated from scan! You can review them by going back to previous steps.
+                    </div>
+                  )}
+
+                  {/* Upload button */}
+                  {pendingFile && (
+                    <button
+                      type="button"
+                      onClick={handleUploadDoc}
+                      disabled={uploading}
+                      className="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white text-xl font-bold py-4 rounded-2xl transition"
+                    >
+                      {uploading ? '⏳ Uploading...' : '📤 Save ID Photo'}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 

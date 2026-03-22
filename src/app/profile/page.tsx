@@ -67,6 +67,13 @@ export default function ProfilePage() {
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Scan state
+  const [scanLoading, setScanLoading] = useState(false);
+  const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
+  const [scanApplied, setScanApplied] = useState(false);
+
+  const isScannable = uploadLabel === 'PhilSys ID' || uploadLabel === 'Senior Citizen ID';
+
   useEffect(() => { fetchProfile(); }, []);
 
   const fetchProfile = async () => {
@@ -183,6 +190,42 @@ export default function ProfilePage() {
     } finally {
       setUploadLoading(false);
     }
+  };
+
+  const handleScanId = async () => {
+    if (!uploadFile) return;
+    setScanLoading(true); setScanResult(null); setScanApplied(false); setUploadError('');
+    const token = localStorage.getItem('auth_token');
+    try {
+      const fd = new FormData();
+      fd.append('file', uploadFile);
+      fd.append('idType', uploadLabel);
+      const res = await fetch('/api/scan-id', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const json = await res.json();
+      if (!res.ok) { setUploadError(json.error || 'Scan failed'); return; }
+      setScanResult(json.data);
+    } catch (err) {
+      setUploadError('Scan failed. Please try again or fill in manually.');
+      console.error(err);
+    } finally {
+      setScanLoading(false);
+    }
+  };
+
+  const handleApplyScan = () => {
+    if (!scanResult) return;
+    setFormData(prev => ({
+      ...prev,
+      fullName: scanResult.fullName || prev.fullName,
+      birthday: scanResult.birthday || prev.birthday,
+      gender: scanResult.gender || prev.gender,
+      address: scanResult.address || prev.address,
+      birthplace: scanResult.birthplace || prev.birthplace,
+      seniorIdNumber: scanResult.seniorIdNumber || prev.seniorIdNumber,
+      philsysId: scanResult.philsysId || prev.philsysId,
+    }));
+    setScanApplied(true);
+    setIsEditing(true);
   };
 
   const handleDeleteId = async (docId: string) => {
@@ -467,51 +510,125 @@ export default function ProfilePage() {
           )}
 
           {/* Upload new */}
-          <div className="print:hidden border-2 border-dashed border-green-200 rounded-2xl p-6 space-y-4 bg-green-50/40">
-            <p className="text-lg font-semibold text-gray-700">📎 Upload ID Photo</p>
-            {uploadError && (
-              <div className="text-red-600 text-base font-medium bg-red-50 px-4 py-2 rounded-xl">⚠️ {uploadError}</div>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="print:hidden space-y-4">
+            <div className="border-2 border-green-200 rounded-2xl p-5 bg-green-50/30 space-y-4">
+              <p className="text-lg font-bold text-gray-700">📎 Add ID Photo</p>
+
+              {uploadError && (
+                <div className="text-red-600 text-base font-medium bg-red-50 border border-red-200 px-4 py-3 rounded-xl">⚠️ {uploadError}</div>
+              )}
+
+              {/* Step 1: select type */}
               <div>
-                <label className="block text-base font-semibold text-gray-600 mb-2">ID Type</label>
+                <label className="block text-base font-semibold text-gray-600 mb-2">Step 1 — Select ID Type</label>
                 <select
                   value={uploadLabel}
-                  onChange={e => setUploadLabel(e.target.value)}
+                  onChange={e => { setUploadLabel(e.target.value); setScanResult(null); setScanApplied(false); }}
                   className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white focus:outline-none focus:border-green-600"
                 >
                   {ID_LABELS.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
+                {isScannable && (
+                  <p className="text-sm text-green-700 font-semibold mt-1.5 flex items-center gap-1">
+                    ✨ This ID supports auto-scan — we can extract your details automatically!
+                  </p>
+                )}
               </div>
+
+              {/* Step 2: pick file */}
               <div>
-                <label className="block text-base font-semibold text-gray-600 mb-2">Photo File</label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleFileChange}
-                  className="w-full text-base text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-base file:font-semibold file:bg-green-100 file:text-green-800 hover:file:bg-green-200 cursor-pointer"
-                />
+                <label className="block text-base font-semibold text-gray-600 mb-2">Step 2 — Take or Choose Photo</label>
+                <label className={`flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed rounded-2xl cursor-pointer transition
+                  ${uploadFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-500 hover:bg-green-50/50'}`}>
+                  {uploadPreview
+                    ? <img src={uploadPreview} alt="Preview" className="h-36 w-full max-w-xs object-contain rounded-xl" />
+                    : <>
+                        <span className="text-5xl">📷</span>
+                        <span className="text-lg font-semibold text-gray-600">Tap to choose photo</span>
+                        <span className="text-sm text-gray-400">JPG, PNG or WEBP · max 5 MB</span>
+                      </>
+                  }
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={e => {
+                      handleFileChange(e);
+                      setScanResult(null);
+                      setScanApplied(false);
+                    }}
+                    className="sr-only"
+                  />
+                </label>
+                {uploadFile && (
+                  <button
+                    onClick={() => { setUploadFile(null); setUploadPreview(null); setScanResult(null); setScanApplied(false); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                    className="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold"
+                  >✕ Remove photo</button>
+                )}
               </div>
-            </div>
-            {uploadPreview && (
-              <div className="flex items-start gap-4">
-                <img src={uploadPreview} alt="Preview" className="h-32 w-48 object-cover rounded-xl border-2 border-gray-200" />
+
+              {/* Step 3: scan (PhilSys / Senior ID only) */}
+              {uploadFile && isScannable && !scanApplied && (
+                <div className="bg-white border-2 border-green-300 rounded-2xl p-4 space-y-3">
+                  <p className="text-base font-bold text-green-800">Step 3 — Auto-Scan ID</p>
+                  <p className="text-sm text-gray-500">We&apos;ll read the details from your ID and fill in your profile automatically.</p>
+
+                  {!scanResult ? (
+                    <button
+                      onClick={handleScanId}
+                      disabled={scanLoading}
+                      className="w-full flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition text-lg"
+                    >
+                      {scanLoading ? '⏳ Scanning...' : '🔍 Scan ID Now'}
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-sm font-semibold text-green-700">✅ Data extracted! Review below:</p>
+                      <div className="bg-green-50 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                        {Object.entries(scanResult).filter(([, v]) => v).map(([k, v]) => (
+                          <div key={k}>
+                            <span className="text-gray-500 capitalize">{k.replace(/([A-Z])/g, ' $1')}: </span>
+                            <span className="font-semibold text-gray-800">{v}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleApplyScan}
+                          className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl transition"
+                        >
+                          ✅ Apply to Profile
+                        </button>
+                        <button
+                          onClick={() => setScanResult(null)}
+                          className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-3 rounded-xl transition text-sm"
+                        >
+                          Re-scan
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {scanApplied && (
+                <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-xl text-base font-semibold">
+                  ✅ Profile fields filled from scan! Review and save your changes above.
+                </div>
+              )}
+
+              {/* Upload button */}
+              {uploadFile && (
                 <button
-                  onClick={() => { setUploadFile(null); setUploadPreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  className="text-red-500 text-sm font-semibold hover:text-red-700"
+                  onClick={handleUploadId}
+                  disabled={uploadLoading}
+                  className="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white text-xl font-bold py-4 rounded-2xl transition"
                 >
-                  ✕ Remove
+                  {uploadLoading ? '⏳ Uploading...' : '📤 Save ID Photo'}
                 </button>
-              </div>
-            )}
-            <button
-              onClick={handleUploadId}
-              disabled={!uploadFile || uploadLoading}
-              className="bg-green-700 hover:bg-green-800 disabled:bg-gray-300 text-white text-xl font-bold px-8 py-4 rounded-2xl transition"
-            >
-              {uploadLoading ? '⏳ Uploading...' : '📤 Upload ID'}
-            </button>
+              )}
+            </div>
           </div>
         </div>
 

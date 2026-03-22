@@ -253,58 +253,45 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
       {/* ══ PRINT-ONLY LAYOUT ══ */}
-      <div className="hidden print:block p-8 font-sans">
+      <div className="hidden print:block font-sans" style={{ fontSize: '7pt', padding: '0' }}>
         {/* Print header */}
-        <div className="text-center border-b-2 border-gray-800 pb-4 mb-6">
-          <h1 className="text-2xl font-bold">🏛️ OSCA Records</h1>
-          <p className="text-sm text-gray-600">Office for Senior Citizens Affairs</p>
-          <p className="text-base font-semibold mt-1">
-            {filterLabel} — {filtered.length} record{filtered.length !== 1 ? 's' : ''}
-          </p>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Printed on {new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}
+        <div className="text-center border-b border-gray-800 pb-1 mb-2">
+          <h1 className="font-bold" style={{ fontSize: '10pt' }}>OSCA Records — Office for Senior Citizens Affairs</h1>
+          <p style={{ fontSize: '8pt' }}>
+            <strong>{filterLabel}</strong> &nbsp;·&nbsp; {filtered.length} record{filtered.length !== 1 ? 's' : ''} &nbsp;·&nbsp;
+            Printed {new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
 
         {/* Print table */}
-        <table className="w-full text-xs border-collapse">
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7pt' }}>
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">#</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Full Name</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Age</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Gender</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Address</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Birthplace</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Birthday</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Relationship</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Senior ID</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">National ID</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Pensioner</th>
-              <th className="border border-gray-300 px-2 py-1.5 text-left font-bold">Registered</th>
+            <tr style={{ backgroundColor: '#f3f4f6' }}>
+              {['#','Full Name','Age','Sex','Address','Birthplace','Birthday','Status','Senior ID','National ID','Pensioner','Registered'].map(h => (
+                <th key={h} style={{ border: '1px solid #d1d5db', padding: '2px 4px', textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((u, i) => (
-              <tr key={u.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                <td className="border border-gray-200 px-2 py-1.5">{i + 1}</td>
-                <td className="border border-gray-200 px-2 py-1.5 font-medium">{u.fullName || '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{u.age ?? '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{cap(u.gender)}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{u.address || '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{u.birthplace || '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{fmt(u.birthday)}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{cap(u.relationshipStatus)}</td>
-                <td className="border border-gray-200 px-2 py-1.5 font-mono">{u.seniorIdNumber || '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5 font-mono">{u.nationalIdNumber || '—'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{u.pensioner ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-200 px-2 py-1.5">{fmt(u.createdAt)}</td>
+              <tr key={u.id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{i + 1}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', fontWeight: 600 }}>{u.fullName || '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{u.age ?? '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{cap(u.gender)}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{u.address || '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{u.birthplace || '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', whiteSpace: 'nowrap' }}>{fmt(u.birthday)}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{cap(u.relationshipStatus)}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', fontFamily: 'monospace' }}>{u.seniorIdNumber || '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', fontFamily: 'monospace' }}>{u.nationalIdNumber || '—'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px' }}>{u.pensioner ? 'Yes' : 'No'}</td>
+                <td style={{ border: '1px solid #e5e7eb', padding: '2px 4px', whiteSpace: 'nowrap' }}>{fmt(u.createdAt)}</td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        <p className="text-xs text-gray-400 mt-6 text-center">— End of Report —</p>
+        <p style={{ fontSize: '6pt', color: '#9ca3af', marginTop: '4px', textAlign: 'center' }}>— End of Report —</p>
       </div>
 
       {/* ══ SCREEN LAYOUT ══ */}
