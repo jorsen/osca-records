@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { verifyToken } from '@/lib/auth';
-
-const client = new Anthropic();
 
 function getToken(request: NextRequest): string | null {
   const token = request.cookies.get('auth_token')?.value;
@@ -18,6 +16,9 @@ export async function POST(request: NextRequest) {
   const userId = verifyToken(token);
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return NextResponse.json({ error: 'Scan service not configured.' }, { status: 503 });
+
   const formData = await request.formData();
   const file = formData.get('file') as File | null;
   const idType = (formData.get('idType') as string) || '';
@@ -29,62 +30,33 @@ export async function POST(request: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const base64 = Buffer.from(bytes).toString('base64');
-  const mediaType = file.type as 'image/jpeg' | 'image/png' | 'image/webp';
 
   const isPhilSys = idType.toLowerCase().includes('philsys');
   const isSenior = idType.toLowerCase().includes('senior');
 
   const prompt = isPhilSys
-    ? `This is a Philippine PhilSys (Philippine Identification System) ID card. Carefully extract the following fields and return ONLY a valid JSON object — no markdown, no explanation:
-{
-  "fullName": "full name exactly as printed (Last Name, First Name Middle Name)",
-  "birthday": "date of birth in YYYY-MM-DD format",
-  "gender": "male or female (lowercase)",
-  "address": "complete permanent address",
-  "birthplace": "place/city/municipality of birth",
-  "philsysId": "PCN number — the long ID number on the card"
-}
-Use null for any field that is not clearly visible or readable.`
+    ? `This is a Philippine PhilSys (Philippine Identification System) ID card. Extract the following and return ONLY valid JSON, no markdown:
+{"fullName":"full name as printed","birthday":"YYYY-MM-DD","gender":"male or female","address":"complete address","birthplace":"place of birth","philsysId":"PCN number on the card"}
+Use null for fields not visible.`
     : isSenior
-    ? `This is a Philippine Senior Citizen ID (OSCA ID) card. Carefully extract the following fields and return ONLY a valid JSON object — no markdown, no explanation:
-{
-  "fullName": "full name exactly as printed",
-  "birthday": "date of birth in YYYY-MM-DD format",
-  "gender": "male or female (lowercase)",
-  "address": "complete address",
-  "birthplace": "place/city/municipality of birth",
-  "seniorIdNumber": "the OSCA ID number printed on the card (digits only, no spaces)"
-}
-Use null for any field that is not clearly visible or readable.`
-    : `This appears to be a Philippine government ID card. Extract whatever personal information you can find and return ONLY a valid JSON object — no markdown, no explanation:
-{
-  "fullName": "full name as printed",
-  "birthday": "date of birth in YYYY-MM-DD format if visible",
-  "gender": "male or female (lowercase) if visible",
-  "address": "address if visible",
-  "birthplace": "birthplace if visible"
-}
-Use null for any field not found.`;
+    ? `This is a Philippine Senior Citizen ID (OSCA ID). Extract the following and return ONLY valid JSON, no markdown:
+{"fullName":"full name as printed","birthday":"YYYY-MM-DD","gender":"male or female","address":"complete address","birthplace":"place of birth","seniorIdNumber":"OSCA ID number digits only"}
+Use null for fields not visible.`
+    : `This is a Philippine government ID. Extract personal information and return ONLY valid JSON, no markdown:
+{"fullName":"full name if visible","birthday":"YYYY-MM-DD if visible","gender":"male or female if visible","address":"address if visible","birthplace":"birthplace if visible"}
+Use null for fields not found.`;
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 512,
-      messages: [{
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: { type: 'base64', media_type: mediaType, data: base64 },
-          },
-          { type: 'text', text: prompt },
-        ],
-      }],
-    });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : '';
-    const jsonStr = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-    const data = JSON.parse(jsonStr);
+    const result = await model.generateContent([
+      { inlineData: { data: base64, mimeType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' } },
+      prompt,
+    ]);
+
+    const text = result.response.text().replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const data = JSON.parse(text);
     return NextResponse.json({ success: true, data });
   } catch (err) {
     console.error('Scan ID error:', err);
