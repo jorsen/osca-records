@@ -4,118 +4,76 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-indigo-600">OSCA Records</h1>
-          <div className="space-x-4">
+    <div className="min-h-screen bg-blue-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex justify-between items-center shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="text-4xl">🏛️</span>
+          <div>
+            <h1 className="text-2xl font-bold text-blue-700 leading-tight">OSCA Records</h1>
+            <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
+          </div>
+        </div>
+        <Link
+          href="/login"
+          className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-6 py-3 rounded-xl transition"
+        >
+          Login
+        </Link>
+      </header>
+
+      {/* Hero */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-7xl mb-6">👴👵</div>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-5 leading-tight">
+            Welcome, Senior Citizens!
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed">
+            Manage your personal information and senior citizen records easily and securely.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <Link
               href="/login"
-              className="text-gray-700 hover:text-indigo-600 transition"
+              className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-5 px-10 rounded-2xl transition shadow-lg"
             >
-              Login
+              <span className="text-2xl">🔑</span> I Already Have an Account
             </Link>
             <Link
               href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition"
+              className="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-5 px-10 rounded-2xl transition shadow-lg"
             >
-              Sign Up
+              <span className="text-2xl">📝</span> Register Now
             </Link>
           </div>
         </div>
-      </nav>
 
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-5xl font-bold text-gray-800 mb-4">
-          Senior Citizen & Pensioner Records
-        </h2>
-        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Manage your profile and benefits information with ease. A comprehensive
-          system for senior citizens and pensioners in the Philippines.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-          <Link
-            href="/login"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105"
-          >
-            Login to Your Account
-          </Link>
-          <Link
-            href="/signup"
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105"
-          >
-            Create New Account
-          </Link>
-        </div>
-
-        {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-4xl mb-2">🔐</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Secure Login</h3>
-            <p className="text-gray-600">
-              Password-protected accounts with secure authentication
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-4xl mb-2">👤</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Profile Management</h3>
-            <p className="text-gray-600">
-              Complete your profile with all relevant information
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-4xl mb-2">📋</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Easy Registration</h3>
-            <p className="text-gray-600">
-              Simple and quick registration process
-            </p>
+        {/* How it works */}
+        <div className="mt-20 max-w-4xl mx-auto w-full">
+          <h3 className="text-2xl font-bold text-gray-700 mb-8">How It Works</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: '📝', step: '1', title: 'Register', desc: 'Create your account with your personal information.' },
+              { icon: '🔑', step: '2', title: 'Log In', desc: 'Sign in anytime to view or update your records.' },
+              { icon: '📋', step: '3', title: 'Manage', desc: 'Keep your information updated and print your profile.' },
+            ].map(({ icon, step, title, desc }) => (
+              <div key={step} className="bg-white rounded-2xl shadow-md p-8 flex flex-col items-center text-center">
+                <div className="text-5xl mb-3">{icon}</div>
+                <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg mb-3">
+                  {step}
+                </div>
+                <h4 className="text-xl font-bold text-gray-800 mb-2">{title}</h4>
+                <p className="text-gray-600 text-lg">{desc}</p>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Information Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-20 max-w-4xl mx-auto">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-left">
-            <h4 className="text-lg font-bold text-indigo-600 mb-4">
-              What You Can Do
-            </h4>
-            <ul className="text-gray-700 space-y-2">
-              <li>✓ Create a personal account</li>
-              <li>✓ Manage your profile information</li>
-              <li>✓ Update your personal details</li>
-              <li>✓ Track your ID numbers</li>
-              <li>✓ Manage pensioner status</li>
-            </ul>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg text-left">
-            <h4 className="text-lg font-bold text-indigo-600 mb-4">
-              Information Stored
-            </h4>
-            <ul className="text-gray-700 space-y-2">
-              <li>• Personal Details (Name, Birthday, Age)</li>
-              <li>• Contact Information (Address, Location)</li>
-              <li>• Government IDs (Senior ID, National ID)</li>
-              <li>• Status (Relationship, Pensioner)</li>
-              <li>• Gender and Demographics</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-20 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2026 OSCA Records. All rights reserved.</p>
-          <p className="text-gray-400 mt-2">
-            Senior Citizen and Pensioner Management System
-          </p>
-        </div>
+      <footer className="bg-gray-800 text-white py-6 text-center text-lg">
+        <p>&copy; 2026 OSCA Records — Senior Citizen and Pensioner Management System</p>
       </footer>
     </div>
   );

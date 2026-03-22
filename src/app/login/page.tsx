@@ -27,19 +27,19 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Login failed. Please check your username and password.');
         return;
       }
 
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('user_role', data.user.role);
 
-      setSuccess('Login successful! Redirecting...');
+      setSuccess('Login successful! Please wait...');
       setTimeout(() => {
         router.push(data.user.role === 'SUPERADMIN' ? '/admin' : '/profile');
       }, 1500);
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('Something went wrong. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -47,69 +47,87 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          OSCA Records
-        </h1>
+    <div className="min-h-screen bg-blue-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b-4 border-blue-600 px-6 py-5 flex items-center gap-3 shadow-sm">
+        <span className="text-4xl">🏛️</span>
+        <div>
+          <h1 className="text-2xl font-bold text-blue-700">OSCA Records</h1>
+          <p className="text-sm text-gray-500">Office for Senior Citizens Affairs</p>
+        </div>
+      </header>
 
-        {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-            {success}
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your username"
-              required
-            />
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg p-10">
+          {/* Title */}
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">🔑</div>
+            <h2 className="text-4xl font-bold text-gray-800">Sign In</h2>
+            <p className="text-lg text-gray-500 mt-2">Welcome back! Please enter your details.</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
+          {success && (
+            <div className="bg-green-50 border-2 border-green-400 text-green-800 px-5 py-4 rounded-xl mb-6 text-lg font-medium text-center">
+              ✅ {success}
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-50 border-2 border-red-400 text-red-800 px-5 py-4 rounded-xl mb-6 text-lg font-medium text-center">
+              ⚠️ {error}
+            </div>
+          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition disabled:bg-gray-400"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xl font-semibold text-gray-700 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                placeholder="Enter your username"
+                required
+                autoComplete="username"
+              />
+            </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/signup" className="text-indigo-600 hover:underline font-medium">
-              Sign up here
+            <div>
+              <label className="block text-xl font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-5 py-4 text-xl border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                placeholder="Enter your password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-2xl font-bold py-5 rounded-2xl transition shadow-md mt-2"
+            >
+              {loading ? '⏳ Signing in...' : '🔑 Sign In'}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center border-t-2 border-gray-100 pt-6">
+            <p className="text-xl text-gray-600">
+              No account yet?
+            </p>
+            <Link
+              href="/signup"
+              className="inline-block mt-3 bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-4 px-10 rounded-2xl transition"
+            >
+              📝 Register Here
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>
