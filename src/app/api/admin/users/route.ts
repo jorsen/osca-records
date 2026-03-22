@@ -43,6 +43,9 @@ export async function GET(request: NextRequest) {
       seniorIdNumber: true,
       nationalIdNumber: true,
       pensioner: true,
+      birthplace: true,
+      philsysId: true,
+      hasNoId: true,
       createdAt: true,
     },
   });

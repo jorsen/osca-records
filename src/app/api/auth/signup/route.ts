@@ -8,78 +8,52 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      username,
-      password,
-      fullName,
-      address,
-      birthday,
-      age,
-      gender,
-      relationshipStatus,
-      seniorIdNumber,
-      nationalIdNumber,
-      pensioner,
+      username, password, fullName, address, birthday, age, gender,
+      relationshipStatus, seniorIdNumber, nationalIdNumber, pensioner,
+      birthplace, philsysId, hasNoId,
+      idDocuments,
     } = body;
 
-    // Validation
     if (!username || !password) {
-      return NextResponse.json(
-        { error: 'Username and password are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
     }
 
     if (seniorIdNumber && !/^\d{16}$/.test(seniorIdNumber)) {
-      return NextResponse.json(
-        { error: 'Senior ID must be exactly 16 digits' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Senior ID must be exactly 16 digits' }, { status: 400 });
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { username },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Username already exists' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'Username already exists' }, { status: 409 });
     }
 
-    // Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
-        fullName,
-        address,
+        fullName: fullName || null,
+        address: address || null,
         birthday: birthday ? new Date(birthday) : null,
         age: age ? parseInt(age) : null,
-        gender,
-        relationshipStatus,
-        seniorIdNumber,
-        nationalIdNumber,
-        pensioner: pensioner === 'yes' ? true : false,
+        gender: gender || null,
+        relationshipStatus: relationshipStatus || null,
+        seniorIdNumber: seniorIdNumber || null,
+        nationalIdNumber: nationalIdNumber || null,
+        pensioner: pensioner === 'yes',
+        birthplace: birthplace || null,
+        philsysId: philsysId || null,
+        hasNoId: hasNoId === true,
+        ...(Array.isArray(idDocuments) && idDocuments.length > 0
+          ? { idDocuments: { create: idDocuments.map((d: { label: string; url: string }) => ({ label: d.label, url: d.url })) } }
+          : {}),
       },
     });
 
-    return NextResponse.json(
-      {
-        message: 'User created successfully',
-        userId: user.id,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ message: 'User created successfully', userId: user.id }, { status: 201 });
   } catch (error) {
     console.error('Signup error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

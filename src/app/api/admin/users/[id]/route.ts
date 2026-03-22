@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { del } from '@vercel/blob';
 import { verifyTokenFull } from '@/lib/auth';
 
 const prisma = new PrismaClient();
@@ -21,14 +22,13 @@ function requireSuperAdmin(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  if (!requireSuperAdmin(request)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
+  if (!requireSuperAdmin(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const body = await request.json();
   const {
     fullName, address, birthday, age, gender,
     relationshipStatus, seniorIdNumber, nationalIdNumber, pensioner,
+    birthplace, philsysId, hasNoId,
   } = body;
 
   if (seniorIdNumber && !/^\d{16}$/.test(seniorIdNumber)) {
@@ -47,12 +47,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       seniorIdNumber: seniorIdNumber || undefined,
       nationalIdNumber: nationalIdNumber || undefined,
       pensioner: pensioner !== undefined ? pensioner === 'yes' : undefined,
+      birthplace: birthplace !== undefined ? (birthplace || null) : undefined,
+      philsysId: philsysId !== undefined ? (philsysId || null) : undefined,
+      hasNoId: hasNoId !== undefined ? Boolean(hasNoId) : undefined,
     },
     select: {
       id: true, username: true, fullName: true, address: true,
       birthday: true, age: true, gender: true,
       relationshipStatus: true, seniorIdNumber: true,
-      nationalIdNumber: true, pensioner: true, createdAt: true,
+      nationalIdNumber: true, pensioner: true,
+      birthplace: true, philsysId: true, hasNoId: true,
+      createdAt: true,
     },
   });
 
@@ -60,8 +65,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  if (!requireSuperAdmin(request)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!requireSuperAdmin(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  // Clean up blob files before deleting user
+  const docs = await prisma.idDocument.findMany({ where: { userId: params.id }, select: { url: true } });
+  for (const doc of docs) {
+    try { await del(doc.url); } catch (_) { /* ignore blob errors */ }
   }
 
   await prisma.user.delete({ where: { id: params.id } });
