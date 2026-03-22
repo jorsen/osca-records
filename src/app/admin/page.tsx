@@ -330,18 +330,19 @@ export default function AdminPage() {
         <div className="flex-1 px-4 sm:px-6 py-6 space-y-6">
 
           {/* ── Stats Cards ── */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {[
-              { label: 'Total Members', value: users.length, icon: '👥', color: 'bg-blue-600' },
-              { label: 'Pensioners', value: totalPensioners, icon: '✅', color: 'bg-green-600' },
-              { label: 'Non-Pensioners', value: totalNonPensioners, icon: '📋', color: 'bg-orange-500' },
-            ].map(({ label, value, icon, color }) => (
-              <div key={label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-5 flex items-center gap-3 sm:gap-5">
-                <div className={`${color} w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-2xl shrink-0`}>
+              { label: 'Total', fullLabel: 'Total Members', value: users.length, icon: '👥', color: 'bg-blue-600' },
+              { label: 'Pensioners', fullLabel: 'Pensioners', value: totalPensioners, icon: '✅', color: 'bg-green-600' },
+              { label: 'Non-Pension', fullLabel: 'Non-Pensioners', value: totalNonPensioners, icon: '📋', color: 'bg-orange-500' },
+            ].map(({ label, fullLabel, value, icon, color }) => (
+              <div key={label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-5 text-center sm:text-left">
+                <div className={`${color} w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-2xl shrink-0 mx-auto sm:mx-0`}>
                   {icon}
                 </div>
                 <div>
-                  <p className="text-gray-500 text-xs sm:text-sm font-medium leading-tight">{label}</p>
+                  <p className="text-gray-500 text-xs font-medium leading-tight hidden sm:block">{fullLabel}</p>
+                  <p className="text-gray-500 text-xs font-medium leading-tight sm:hidden">{label}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-gray-800">{loading ? '—' : value}</p>
                 </div>
               </div>
@@ -352,17 +353,17 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
 
             {/* Toolbar */}
-            <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex flex-col gap-3">
-              <div className="flex justify-between items-start">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-100 space-y-3">
+              <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-800">Member Records</h2>
-                  <p className="text-sm text-gray-400">
-                    Showing {filtered.length} of {users.length} members
+                  <h2 className="text-base sm:text-lg font-bold text-gray-800">Member Records</h2>
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    {filtered.length} of {users.length} members · {filterLabel}
                   </p>
                 </div>
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2.5 rounded-xl transition text-sm shrink-0"
+                  className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition text-sm shrink-0"
                   title={`Print ${filterLabel}`}
                 >
                   🖨️ <span className="hidden sm:inline">Print</span>
@@ -372,20 +373,20 @@ export default function AdminPage() {
                 <select
                   value={pensionerFilter}
                   onChange={(e) => setPensionerFilter(e.target.value as 'all' | 'yes' | 'no')}
-                  className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm bg-white font-medium"
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm bg-white font-medium"
                 >
                   <option value="all">👥 All Members</option>
                   <option value="yes">✅ Pensioners Only</option>
                   <option value="no">📋 Non-Pensioners Only</option>
                 </select>
-                <div className="relative flex-1 sm:flex-none">
+                <div className="relative w-full sm:flex-none">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search name, username, ID..."
-                    className="pl-9 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-full sm:w-72"
+                    className="pl-9 pr-4 py-3 sm:py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-full sm:w-72"
                   />
                 </div>
               </div>
@@ -405,34 +406,83 @@ export default function AdminPage() {
             ) : (
               <>
                 {/* ── Mobile: Card list ── */}
-                <div className="block lg:hidden divide-y divide-gray-100">
-                  {filtered.map((user) => (
-                    <div key={user.id} className="p-4 hover:bg-blue-50/50 transition">
-                      <div className="flex justify-between items-start gap-3">
+                <div className="block lg:hidden p-3 space-y-3">
+                  {filtered.map((user, i) => (
+                    <div key={user.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+                      {/* Card header */}
+                      <div className="bg-blue-600 px-4 py-3 flex justify-between items-start gap-3">
                         <div className="min-w-0">
-                          <p className="font-bold text-gray-800 text-base truncate">{user.fullName || <span className="text-gray-400 font-normal italic">No name</span>}</p>
-                          <p className="text-sm text-gray-500">@{user.username}</p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {user.age && <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium">{user.age} yrs</span>}
-                            {user.gender && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">{user.gender}</span>}
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${user.pensioner ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                              {user.pensioner ? '✅ Pensioner' : 'Non-Pensioner'}
-                            </span>
+                          <p className="text-white font-bold text-base leading-tight truncate">
+                            {user.fullName || <span className="italic opacity-70">No name on file</span>}
+                          </p>
+                          <p className="text-blue-200 text-sm mt-0.5">@{user.username}</p>
+                        </div>
+                        <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${user.pensioner ? 'bg-green-400 text-white' : 'bg-white/20 text-white'}`}>
+                          {user.pensioner ? '✅ Pensioner' : 'Non-Pensioner'}
+                        </span>
+                      </div>
+
+                      {/* Card body */}
+                      <div className="px-4 py-3">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                          <div>
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Age</p>
+                            <p className="text-gray-800 font-semibold text-sm mt-0.5">{user.age ?? <span className="text-gray-400 font-normal">—</span>}</p>
                           </div>
+                          <div>
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Gender</p>
+                            <p className="text-gray-800 font-semibold text-sm capitalize mt-0.5">{user.gender || <span className="text-gray-400 font-normal">—</span>}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Birthday</p>
+                            <p className="text-gray-800 font-semibold text-sm mt-0.5">{user.birthday ? fmt(user.birthday) : <span className="text-gray-400 font-normal">—</span>}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Relationship</p>
+                            <p className="text-gray-800 font-semibold text-sm capitalize mt-0.5">{user.relationshipStatus || <span className="text-gray-400 font-normal">—</span>}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Address</p>
+                            <p className="text-gray-800 font-semibold text-sm mt-0.5">{user.address || <span className="text-gray-400 font-normal">—</span>}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Senior ID</p>
+                            <p className="text-gray-800 font-mono font-semibold text-sm mt-0.5 tracking-wider">{user.seniorIdNumber || <span className="text-gray-400 font-normal font-sans tracking-normal">—</span>}</p>
+                          </div>
+                          {user.nationalIdNumber && (
+                            <div className="col-span-2">
+                              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">National ID</p>
+                              <p className="text-gray-800 font-mono font-semibold text-sm mt-0.5">{user.nationalIdNumber}</p>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex flex-col gap-1.5 shrink-0">
-                          <button onClick={() => openEdit(user)} title="Edit" className="w-9 h-9 flex items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition text-sm">✏️</button>
-                          <button onClick={() => openPassword(user)} title="Change password" className="w-9 h-9 flex items-center justify-center bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition text-sm">🔑</button>
-                          <button onClick={() => setDeleteUser(user)} title="Delete" className="w-9 h-9 flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition text-sm">🗑️</button>
-                        </div>
+                        <p className="text-gray-400 text-xs mt-3 pt-3 border-t border-gray-100">
+                          #{i + 1} · Registered {fmt(user.createdAt)}
+                        </p>
                       </div>
-                      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600">
-                        {user.address && <div><span className="font-semibold text-gray-400">Address: </span>{user.address}</div>}
-                        {user.seniorIdNumber && <div><span className="font-semibold text-gray-400">Senior ID: </span><span className="font-mono">{user.seniorIdNumber}</span></div>}
-                        {user.birthday && <div><span className="font-semibold text-gray-400">Birthday: </span>{fmt(user.birthday)}</div>}
-                        {user.nationalIdNumber && <div><span className="font-semibold text-gray-400">National ID: </span><span className="font-mono">{user.nationalIdNumber}</span></div>}
+
+                      {/* Card actions */}
+                      <div className="border-t border-gray-100 grid grid-cols-3 divide-x divide-gray-100">
+                        <button
+                          onClick={() => openEdit(user)}
+                          className="flex items-center justify-center gap-2 py-3 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition active:bg-blue-100"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => openPassword(user)}
+                          className="flex items-center justify-center gap-2 py-3 text-yellow-600 font-semibold text-sm hover:bg-yellow-50 transition active:bg-yellow-100"
+                        >
+                          🔑 Password
+                        </button>
+                        <button
+                          onClick={() => setDeleteUser(user)}
+                          className="flex items-center justify-center gap-2 py-3 text-red-600 font-semibold text-sm hover:bg-red-50 transition active:bg-red-100"
+                        >
+                          🗑️ Delete
+                        </button>
                       </div>
-                      <p className="text-xs text-gray-400 mt-2">Registered {fmt(user.createdAt)}</p>
                     </div>
                   ))}
                 </div>
