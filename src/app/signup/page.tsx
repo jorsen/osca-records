@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import CameraCapture from '@/components/CameraCapture';
 
 const STEPS = ['Account', 'Personal Info', 'IDs & Status', 'ID Photos'];
 
@@ -26,6 +27,7 @@ export default function SignupPage() {
   const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
   const [scanApplied, setScanApplied] = useState(false);
   const isScannable = uploadingLabel === 'PhilSys ID' || uploadingLabel === 'Senior Citizen ID';
+  const [showCamera, setShowCamera] = useState(false);
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -355,22 +357,48 @@ export default function SignupPage() {
                   {/* 2. Photo picker */}
                   <div>
                     <label className="block text-base font-semibold text-gray-600 mb-1">Step 2 — Take or Choose Photo</label>
-                    <label className={`flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed rounded-2xl cursor-pointer transition
-                      ${pendingFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-500 hover:bg-green-50/50'}`}>
-                      {uploadPreview
-                        ? <img src={uploadPreview} alt="Preview" className="h-36 w-full max-w-xs object-contain rounded-xl" />
-                        : <>
-                            <span className="text-5xl">📷</span>
-                            <span className="text-lg font-semibold text-gray-600">Tap to choose photo</span>
-                            <span className="text-sm text-gray-400">JPG, PNG or WEBP · max 5 MB</span>
-                          </>
-                      }
-                      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePickFile} disabled={uploading} className="sr-only" />
-                    </label>
-                    {pendingFile && (
-                      <button type="button" onClick={clearPending} className="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold">✕ Remove photo</button>
+
+                    {uploadPreview ? (
+                      <div className="relative border-2 border-green-500 rounded-2xl overflow-hidden bg-green-50">
+                        <img src={uploadPreview} alt="Preview" className="w-full object-contain max-h-52" />
+                        <button
+                          type="button"
+                          onClick={clearPending}
+                          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-lg"
+                        >✕ Remove</button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowCamera(true)}
+                          className="flex flex-col items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-300 hover:border-green-500 hover:bg-green-50/50 rounded-2xl transition"
+                        >
+                          <span className="text-4xl">📸</span>
+                          <span className="text-base font-semibold text-gray-600">Use Camera</span>
+                        </button>
+                        <label className="flex flex-col items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-300 hover:border-green-500 hover:bg-green-50/50 rounded-2xl transition cursor-pointer">
+                          <span className="text-4xl">🖼️</span>
+                          <span className="text-base font-semibold text-gray-600">Choose File</span>
+                          <span className="text-xs text-gray-400">JPG / PNG / WEBP</span>
+                          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePickFile} disabled={uploading} className="sr-only" />
+                        </label>
+                      </div>
                     )}
                   </div>
+
+                  {showCamera && (
+                    <CameraCapture
+                      onCapture={(file, preview) => {
+                        setPendingFile(file);
+                        setUploadPreview(preview);
+                        setScanResult(null);
+                        setScanApplied(false);
+                        setShowCamera(false);
+                      }}
+                      onClose={() => setShowCamera(false)}
+                    />
+                  )}
 
                   {/* 3. Scan (PhilSys / Senior only) */}
                   {pendingFile && isScannable && !scanApplied && (

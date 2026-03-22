@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import CameraCapture from '@/components/CameraCapture';
 
 interface IdDocument {
   id: string;
@@ -71,6 +72,7 @@ export default function ProfilePage() {
   const [scanLoading, setScanLoading] = useState(false);
   const [scanResult, setScanResult] = useState<Record<string, string | null> | null>(null);
   const [scanApplied, setScanApplied] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   const isScannable = uploadLabel === 'PhilSys ID' || uploadLabel === 'Senior Citizen ID';
 
@@ -535,38 +537,59 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Step 2: pick file */}
+              {/* Step 2: pick file or camera */}
               <div>
                 <label className="block text-base font-semibold text-gray-600 mb-2">Step 2 — Take or Choose Photo</label>
-                <label className={`flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed rounded-2xl cursor-pointer transition
-                  ${uploadFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-500 hover:bg-green-50/50'}`}>
-                  {uploadPreview
-                    ? <img src={uploadPreview} alt="Preview" className="h-36 w-full max-w-xs object-contain rounded-xl" />
-                    : <>
-                        <span className="text-5xl">📷</span>
-                        <span className="text-lg font-semibold text-gray-600">Tap to choose photo</span>
-                        <span className="text-sm text-gray-400">JPG, PNG or WEBP · max 5 MB</span>
-                      </>
-                  }
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={e => {
-                      handleFileChange(e);
-                      setScanResult(null);
-                      setScanApplied(false);
-                    }}
-                    className="sr-only"
-                  />
-                </label>
-                {uploadFile && (
-                  <button
-                    onClick={() => { setUploadFile(null); setUploadPreview(null); setScanResult(null); setScanApplied(false); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                    className="mt-2 text-red-500 hover:text-red-700 text-sm font-semibold"
-                  >✕ Remove photo</button>
+
+                {uploadPreview ? (
+                  <div className="relative border-2 border-green-500 rounded-2xl overflow-hidden bg-green-50">
+                    <img src={uploadPreview} alt="Preview" className="w-full object-contain max-h-52" />
+                    <button
+                      onClick={() => { setUploadFile(null); setUploadPreview(null); setScanResult(null); setScanApplied(false); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-lg"
+                    >✕ Remove</button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Camera button */}
+                    <button
+                      type="button"
+                      onClick={() => setShowCamera(true)}
+                      className="flex flex-col items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-300 hover:border-green-500 hover:bg-green-50/50 rounded-2xl transition cursor-pointer"
+                    >
+                      <span className="text-4xl">📸</span>
+                      <span className="text-base font-semibold text-gray-600">Use Camera</span>
+                    </button>
+                    {/* File picker */}
+                    <label className="flex flex-col items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-300 hover:border-green-500 hover:bg-green-50/50 rounded-2xl transition cursor-pointer">
+                      <span className="text-4xl">🖼️</span>
+                      <span className="text-base font-semibold text-gray-600">Choose File</span>
+                      <span className="text-xs text-gray-400">JPG / PNG / WEBP</span>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={e => { handleFileChange(e); setScanResult(null); setScanApplied(false); }}
+                        className="sr-only"
+                      />
+                    </label>
+                  </div>
                 )}
               </div>
+
+              {/* Camera modal */}
+              {showCamera && (
+                <CameraCapture
+                  onCapture={(file, preview) => {
+                    setUploadFile(file);
+                    setUploadPreview(preview);
+                    setScanResult(null);
+                    setScanApplied(false);
+                    setShowCamera(false);
+                  }}
+                  onClose={() => setShowCamera(false)}
+                />
+              )}
 
               {/* Step 3: scan (PhilSys / Senior ID only) */}
               {uploadFile && isScannable && !scanApplied && (
