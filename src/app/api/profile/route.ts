@@ -105,6 +105,13 @@ export async function PUT(request: NextRequest) {
       pensioner,
     } = body;
 
+    if (seniorIdNumber && !/^\d{16}$/.test(seniorIdNumber)) {
+      return NextResponse.json(
+        { error: 'Senior ID must be exactly 16 digits' },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.update({
       where: { id: userId },
       data: {

@@ -29,6 +29,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (seniorIdNumber && !/^\d{16}$/.test(seniorIdNumber)) {
+      return NextResponse.json(
+        { error: 'Senior ID must be exactly 16 digits' },
+        { status: 400 }
+      );
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { username },

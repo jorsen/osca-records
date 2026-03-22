@@ -230,7 +230,11 @@ export default function SignupPage() {
                   value={formData.seniorIdNumber}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="OSCA Senior ID"
+                  placeholder="16-digit OSCA Senior ID"
+                  minLength={16}
+                  maxLength={16}
+                  pattern="\d{16}"
+                  title="Senior ID must be exactly 16 digits"
                 />
               </div>
 
