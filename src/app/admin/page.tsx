@@ -200,9 +200,9 @@ export default function AdminPage() {
         </button>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div className="px-4 py-8">
+        <div className="bg-white rounded-lg shadow-xl p-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <h2 className="text-xl font-bold text-gray-800">
               All Records
               <span className="ml-2 text-sm font-normal text-gray-500">({filtered.length} of {users.length})</span>
@@ -221,54 +221,66 @@ export default function AdminPage() {
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 text-gray-500">No records found.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-indigo-50 text-gray-700 uppercase text-xs">
-                  <tr>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('fullName')}>Full Name <SortIcon field="fullName" /></th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('username')}>Username <SortIcon field="username" /></th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('age')}>Age <SortIcon field="age" /></th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('gender')}>Gender <SortIcon field="gender" /></th>
-                    <th className="px-4 py-3 whitespace-nowrap">Address</th>
-                    <th className="px-4 py-3 whitespace-nowrap">Birthday</th>
-                    <th className="px-4 py-3 whitespace-nowrap">Relationship</th>
-                    <th className="px-4 py-3 whitespace-nowrap">Senior ID</th>
-                    <th className="px-4 py-3 whitespace-nowrap">National ID</th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('pensioner')}>Pensioner <SortIcon field="pensioner" /></th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-indigo-100 whitespace-nowrap" onClick={() => handleSort('createdAt')}>Registered <SortIcon field="createdAt" /></th>
-                    <th className="px-4 py-3 whitespace-nowrap">Actions</th>
+            <table className="w-full table-fixed text-xs text-left">
+              <colgroup>
+                <col className="w-[11%]" />
+                <col className="w-[8%]" />
+                <col className="w-[4%]" />
+                <col className="w-[6%]" />
+                <col className="w-[12%]" />
+                <col className="w-[7%]" />
+                <col className="w-[8%]" />
+                <col className="w-[9%]" />
+                <col className="w-[9%]" />
+                <col className="w-[6%]" />
+                <col className="w-[7%]" />
+                <col className="w-[13%]" />
+              </colgroup>
+              <thead className="bg-indigo-50 text-gray-700 uppercase text-xs">
+                <tr>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('fullName')}>Full Name <SortIcon field="fullName" /></th>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('username')}>Username <SortIcon field="username" /></th>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('age')}>Age <SortIcon field="age" /></th>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('gender')}>Gender <SortIcon field="gender" /></th>
+                  <th className="px-2 py-2">Address</th>
+                  <th className="px-2 py-2">Birthday</th>
+                  <th className="px-2 py-2">Relationship</th>
+                  <th className="px-2 py-2">Senior ID</th>
+                  <th className="px-2 py-2">National ID</th>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('pensioner')}>Pensioner <SortIcon field="pensioner" /></th>
+                  <th className="px-2 py-2 cursor-pointer hover:bg-indigo-100" onClick={() => handleSort('createdAt')}>Registered <SortIcon field="createdAt" /></th>
+                  <th className="px-2 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filtered.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50 transition">
+                    <td className="px-2 py-2 font-medium text-gray-800 truncate">{user.fullName || '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 truncate">@{user.username}</td>
+                    <td className="px-2 py-2 text-gray-600">{user.age ?? '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 capitalize truncate">{user.gender || '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 truncate">{user.address || '—'}</td>
+                    <td className="px-2 py-2 text-gray-600">{user.birthday ? new Date(user.birthday).toLocaleDateString() : '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 capitalize truncate">{user.relationshipStatus || '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 truncate">{user.seniorIdNumber || '—'}</td>
+                    <td className="px-2 py-2 text-gray-600 truncate">{user.nationalIdNumber || '—'}</td>
+                    <td className="px-2 py-2">
+                      <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${user.pensioner ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {user.pensioner ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 text-gray-600">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="px-2 py-2">
+                      <div className="flex gap-1">
+                        <button onClick={() => openEdit(user)} className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-1.5 py-1 rounded text-xs font-medium transition">Edit</button>
+                        <button onClick={() => openPassword(user)} className="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-1.5 py-1 rounded text-xs font-medium transition">Pwd</button>
+                        <button onClick={() => setDeleteUser(user)} className="bg-red-100 hover:bg-red-200 text-red-700 px-1.5 py-1 rounded text-xs font-medium transition">Del</button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filtered.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{user.fullName || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">@{user.username}</td>
-                      <td className="px-4 py-3 text-gray-600">{user.age ?? '—'}</td>
-                      <td className="px-4 py-3 text-gray-600 capitalize">{user.gender || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{user.address || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.birthday ? new Date(user.birthday).toLocaleDateString() : '—'}</td>
-                      <td className="px-4 py-3 text-gray-600 capitalize">{user.relationshipStatus || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{user.seniorIdNumber || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{user.nationalIdNumber || '—'}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.pensioner ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                          {user.pensioner ? 'Yes' : 'No'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="flex gap-1">
-                          <button onClick={() => openEdit(user)} className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded text-xs font-medium transition">Edit</button>
-                          <button onClick={() => openPassword(user)} className="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-2 py-1 rounded text-xs font-medium transition">Password</button>
-                          <button onClick={() => setDeleteUser(user)} className="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-xs font-medium transition">Delete</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
